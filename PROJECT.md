@@ -40,7 +40,7 @@ This is part of **Modern AI Pro's "Multi-Agent Systems v2" path** (`class-platfo
 10. architecture-workshop    ← the BIG exercise (separate folder)
 11. architecture-frontier
 12. task-allocation          ← Lab 2's PRIMARY target
-13. hitl-design              ← Lab 4's PRIMARY target (optional)
+13. hitl-design              ← Lab 4's PRIMARY target (HITL & governance)
 ```
 
 The primer covers lessons **2, 5, 8, 9, 10, 12** in microcosm. The big exercise extends to **2, 9, 10, 12, 13**.
@@ -85,11 +85,12 @@ This framework is the spine of the course. Every lab and every design choice in 
 | Lab 1 — Blackboard | 1, 4 | 5, 6 (felt as pain, not solved) |
 | Lab 2 — Task allocation | 2 | 6, 12 (negotiation and trust become obvious gaps) |
 | Lab 3 — Team design | 3 | 7, 15 (BDI drift, coordination eval) |
-| Lab 4 — openclaw *(optional)* | 10 | 5 (channel = real intent), 13 (governance for a public bot) |
+| Lab 4 — HITL & governance | 10, 13 | 5 (typed action = intent), 15 (the gate is an evaluator) |
 | Lab 5 — build sprint *(capstone)* | 1, 2, 3, 4, 5, 9, 15 | 8 (memory across rounds via lessons) |
+| Bonus — openclaw *(optional)* | 10, 13 (on a real channel) | 5 (channel = real intent) |
 | Big exercise (separate repo) | 1, 2, 3, 8, 10, 13, 15 | 9, 14 |
 
-After all labs + big exercise, students have **personally implemented ~7 of 16 pillars** and **felt the absence** of another ~6. Enough fluency to read framework docs critically.
+After all labs + big exercise, students have **personally implemented ~9 of 16 pillars** (1, 2, 3, 4, 5, 9, 10, 13, 15) and **felt the absence** of another ~5. Enough fluency to read framework docs critically.
 
 ---
 
@@ -109,10 +110,11 @@ After all labs + big exercise, students have **personally implemented ~7 of 16 p
 |---|---|
 | `lab0-workflow/` | ✅ Built. Bundles `gstack/` toolkit + `docvault-legacy/` (default) and `SDRAuto/` (alt) sandboxes. |
 | `lab1-blackboard/` | ✅ Built and smoke-tested. |
-| `lab2-task-allocation/` | ✅ Built. CLAUDE.md + `task-cli/` (Node) + 3 rounds (free-for-all → first-claim → contract-net). |
+| `lab2-task-allocation/` | ✅ Built. CLAUDE.md + `task-cli/` (Node) + 2 rounds (first-claim → contract-net; Lab 1 covers free-for-all). |
 | `lab3-team-design/` | ✅ Built. Three round folders (`round1-supervisor/`, `round2-pipeline/`, `round3-swarm/`), each with its own CLAUDE.md; same `task.md`. |
-| `lab4-openclaw-optional/` | ✅ Built. Wrapper README + bundled `openclaw/` agent gateway. |
-| `lab5-build-sprint/` | ✅ Built. Role-specialized agents (frontend/backend/tests), typed performatives, `task-cli/` with capability tags, `eval-self.sh` for 3-tier evaluation. |
+| `lab4-hitl-governance/` | ✅ Built. `hitl-cli/` (approval-queue + governance engine), 3 rounds (no-gate → graduated → governance-stress), LLM gate + structural irreversibility floor, `hitl-watch.sh` mirror. Smoke-tested. Needs `.claude/settings.json` copied from a sibling lab. |
+| `lab5-build-sprint/` | ✅ Built. Local role-specialist agents (frontend/backend/tests, each owning a capability cluster — no orphan tasks), `project.template/` starter, `lab5-up/down.sh`, typed performatives, `task-cli/` with capability tags + `fail`, `eval-self.sh` for 3-tier evaluation. Smoke-tested. |
+| `lab4-openclaw-optional/` *(bonus)* | ✅ Built. Wrapper README + bundled `openclaw/` agent gateway — real-channel Telegram HITL. Former Lab 4, now an optional bonus. |
 | `bonus-langgraph/` | ⏳ Designed, not built. Same coordination problem in ~60 LOC of LangGraph. |
 | `README.md` (student entry point) | ✅ |
 | `PROJECT.md` (this file — design doc) | ✅ |
@@ -126,8 +128,8 @@ Last updated: 2026-05-09.
 - **Class size:** ~50 students live, ~35 actively coding
 - **Format:** in-person classroom, projected leaderboard during the big exercise
 - **Tooling on every laptop:** Claude Code installed, an Anthropic Pro/Max subscription or API key, terminal with `bash + awk + grep + sed + tmux` (default on macOS/Linux/WSL), Node 18+, Bun v1.0+
-- **Network:** outbound HTTPS to `api.anthropic.com` is sufficient for Labs 0–3. Lab 4 also needs Groq + Telegram. The big exercise also needs outbound to the kapi-prod blackboard server.
-- **Total class block this primer occupies:** ~135 min for Labs 0–3 (or ~180 min including Lab 4), then a 15-min debrief, then transition into the big exercise.
+- **Network:** outbound HTTPS to `api.anthropic.com` is sufficient for Labs 0–5 (all local). Only the optional openclaw bonus needs Groq + Telegram. The big exercise also needs outbound to the kapi-prod blackboard server.
+- **Total class block this primer occupies:** ~245 min for Labs 0–5 (Lab 4 HITL adds ~40), then a 15-min debrief, then transition into the big exercise. The openclaw bonus is a separate optional +45.
 
 ---
 
@@ -148,7 +150,7 @@ Last updated: 2026-05-09.
 2. **Update the Status snapshot** above every time you build or change a lab.
 3. **Update README.md's lab table** if you add, remove, or rename a lab. The two docs reference the same labs — keep them in sync.
 4. **Re-test `bb-watch.sh`** if you change the blackboard template — the script's grep patterns are coupled to the template's section names.
-5. **Don't renumber the labs.** Lab 5 sits after Lab 4 in numbering but *runs before it* in the recommended order. Renumbering would break dozens of cross-references.
+5. **Lab order is now natural: 0 → 1 → 2 → 3 → 4 → 5.** Lab 4 (HITL & governance) runs before the Lab 5 capstone. The former openclaw Lab 4 is preserved as an optional bonus in `lab4-openclaw-optional/` — don't delete it; it still teaches §10/§13 on a real channel.
 
 ---
 

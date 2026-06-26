@@ -113,4 +113,4 @@ lab3-team-design/
 
 ---
 
-## Then proceed to the architecture-workshop big exercise.
+## Then proceed to Lab 4 (HITL & Governance).

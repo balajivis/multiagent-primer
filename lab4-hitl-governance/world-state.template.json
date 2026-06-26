@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "balances": {
+    "cust-alice": 0,
+    "cust-bob": 0,
+    "cust-carol": 0,
+    "cust-dave": 0
+  },
+  "records": {
+    "cust-alice": { "name": "Alice Tran", "plan": "pro", "tags": [] },
+    "cust-bob": { "name": "Bob Iyer", "plan": "team", "tags": [] },
+    "cust-carol": { "name": "Carol Mendes", "plan": "pro", "tags": [] },
+    "cust-dave": { "name": "Dave Okoro", "plan": "free", "tags": [] }
+  },
+  "outbox": [],
+  "applied": []
+}

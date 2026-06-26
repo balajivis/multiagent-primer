@@ -20,16 +20,19 @@ Tests pass under `npm test`. README quickstart at `project/README.md`.
 
 ## How the work decomposes
 
-12 starter tasks are pre-loaded in `tasks.json`, tagged by capability:
+12 starter tasks are pre-loaded in `tasks.json`, tagged by capability. There are
+six capability tags but **three agents** — each agent owns a cluster, so every
+task has an owner:
 
-- `backend` — CLI dispatcher, command implementations, validation, storage layer
-- `frontend` — output formatting (table, colour, sort/filter), interactive prompts
-- `tests` — unit + smoke tests
-- `db` — storage abstraction, locks
-- `docs` — README, command help text
-- `devops` — package.json scripts, lint, build
+| Agent | Owns tags | Covers |
+|---|---|---|
+| **backend** | `backend`, `db`, `devops` | CLI dispatcher, commands, validation, storage + locks, package.json/tsconfig |
+| **frontend** | `frontend`, `docs` | output formatting (table, colour, filter), help/usage, README quickstart |
+| **tests** | `tests` | unit tests + smoke script |
 
-Each agent should claim only tasks matching their role's capabilities (see `.claude/agents/<role>.md`).
+Each agent claims only tasks matching the tags it owns (see
+`.claude/agents/<role>.md`). The CLI does **not** enforce this — claiming
+outside your tags is visible as weak output, exactly like Lab 2 Round 2.
 
 ## Time budget
 

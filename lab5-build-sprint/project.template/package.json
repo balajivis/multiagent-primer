@@ -1,0 +1,9 @@
+{
+  "name": "tiny-crm-cli",
+  "version": "0.0.1",
+  "type": "module",
+  "description": "JSON-backed lead-management CLI — Lab 5 build-sprint starter. The team fleshes this out; package scripts + tsconfig are task T-11 (owned by backend).",
+  "bin": {
+    "tiny-crm": "src/cli.ts"
+  }
+}

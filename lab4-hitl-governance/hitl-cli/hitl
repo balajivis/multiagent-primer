@@ -1,0 +1,340 @@
+#!/usr/bin/env node
+// hitl — the approval-queue + governance engine for Lab 4.
+//
+// Two actors drive it:
+//   • the GATE agent (an LLM judge) routes each proposed action to an
+//     autonomy level:        auto | review | approve | block
+//   • the HUMAN (you) works the approve-queue:
+//                            list | show | approve | reject | edit | escalate
+//
+// The GOVERNANCE FLOOR is enforced HERE, in code, not by the LLM: any action
+// whose *structured* class is irreversible can never be auto-executed, no
+// matter what the gate agent recommends. The gate's job is semantic judgement
+// (confidence, ambiguity, injection-likelihood); the floor's job is the
+// non-negotiable rule. That split is the whole lesson.
+//
+// commands:
+//   hitl propose  --request R --action A --target T [--amount N] [--body "..."]
+//                 --reversible <true|false> --confidence <0..1> --rationale "..." --by worker
+//   hitl route    <proposalId> --level <auto|review|approve|block> --reason "..." --by gate
+//   hitl list     [--pending|--all]
+//   hitl show     <queueId>
+//   hitl approve  <queueId> --by <name>
+//   hitl reject   <queueId> --reason "..." --by <name>
+//   hitl edit     <queueId> --to "<new body or amount>" --by <name>
+//   hitl escalate <queueId> --to <name> --by <name>
+//   hitl expire                       # sweep timed-out pending items (fail-safe: not applied)
+//   hitl status
+//   hitl audit    [--tail N]
+
+const fs   = require('fs');
+const path = require('path');
+
+const DIR   = path.resolve(__dirname, '..');
+const F = {
+  requests:  path.join(DIR, 'requests.json'),
+  proposals: path.join(DIR, 'proposals.json'),
+  queue:     path.join(DIR, 'queue.json'),
+  world:     path.join(DIR, 'world-state.json'),
+  audit:     path.join(DIR, 'audit.log'),
+};
+const LOCK = path.join(DIR, '.hitl.lock');
+
+// Structured governance floor — keyed on the typed `action` field, NOT on
+// free-text matching. Irreversible classes can never auto/review-execute.
+const IRREVERSIBLE = new Set(['refund', 'delete_record', 'wire_transfer', 'charge_card']);
+const TIMEOUT_MIN  = 30; // pending items older than this expire (fail-safe → not applied)
+
+// ── atomic lock via O_EXCL (POSIX-portable, same pattern as Lab 2's task-cli) ──
+function withLock(fn) {
+  const start = Date.now();
+  while (true) {
+    try {
+      const fd = fs.openSync(LOCK, 'wx');
+      try { return fn(); }
+      finally { try { fs.closeSync(fd); } catch {} try { fs.unlinkSync(LOCK); } catch {} }
+    } catch (e) {
+      if (e.code !== 'EEXIST') throw e;
+      if (Date.now() - start > 3000) throw new Error('lock timeout — rm ' + LOCK);
+      const until = Date.now() + 20 + Math.floor(Math.random() * 30);
+      while (Date.now() < until) {}
+    }
+  }
+}
+
+function load(file, fallback) {
+  if (!fs.existsSync(file)) return fallback;
+  return JSON.parse(fs.readFileSync(file, 'utf8'));
+}
+function save(file, data) {
+  if (data && typeof data.version === 'number') data.version++;
+  fs.writeFileSync(file, JSON.stringify(data, null, 2) + '\n');
+}
+function nowISO() { return new Date().toISOString(); }
+
+function audit(line) {
+  fs.appendFileSync(F.audit, `${nowISO()}  ${line}\n`);
+}
+
+// ── arg parsing ──────────────────────────────────────────────────────────────
+const [cmd, ...rest] = process.argv.slice(2);
+function flag(name) { const i = rest.indexOf('--' + name); return i >= 0 ? rest[i + 1] : null; }
+function has(name)  { return rest.includes('--' + name); }
+function die(msg)   { console.error(msg); process.exit(2); }
+
+const COL = { reset:'\x1b[0m', dim:'\x1b[2m', bold:'\x1b[1m',
+  auto:'\x1b[32m', review:'\x1b[36m', approve:'\x1b[33m', block:'\x1b[31m',
+  pending:'\x1b[33m', approved:'\x1b[32m', rejected:'\x1b[31m', edited:'\x1b[35m',
+  escalated:'\x1b[36m', expired:'\x1b[2m' };
+const tty = process.stdout.isTTY;
+function c(s, k) { return tty && COL[k] ? COL[k] + s + COL.reset : String(s); }
+
+// ── execution against the mock world (what "applying" an action means) ─────────
+function applyAction(p, world) {
+  world.applied = world.applied || [];
+  switch (p.action) {
+    case 'refund':
+    case 'wire_transfer':
+    case 'charge_card':
+      world.balances = world.balances || {};
+      world.balances[p.target] = (world.balances[p.target] || 0) - (Number(p.amount) || 0);
+      break;
+    case 'delete_record':
+      world.records = world.records || {};
+      delete world.records[p.target];
+      break;
+    case 'reply':
+    case 'email':
+    case 'escalate':
+      world.outbox = world.outbox || [];
+      world.outbox.push({ to: p.target, body: p.body || '', from_action: p.action, at: nowISO() });
+      break;
+    case 'tag':
+    case 'note':
+      world.records = world.records || {};
+      world.records[p.target] = world.records[p.target] || { tags: [] };
+      (world.records[p.target].tags = world.records[p.target].tags || []).push(p.body || 'tagged');
+      break;
+    default:
+      world.outbox = world.outbox || [];
+      world.outbox.push({ to: p.target, body: `[unknown action ${p.action}] ${p.body || ''}`, at: nowISO() });
+  }
+  world.applied.push({ proposal: p.id, action: p.action, target: p.target, amount: p.amount ?? null, at: nowISO() });
+}
+
+function findProposal(props, id) {
+  const p = props.proposals.find(x => x.id === id);
+  if (!p) throw new Error(`proposal ${id} not found`);
+  return p;
+}
+function nextId(arr, prefix) {
+  const n = arr.length + 1;
+  return prefix + String(n).padStart(2, '0');
+}
+
+// ── commands ───────────────────────────────────────────────────────────────
+function cmdPropose() {
+  const request = flag('request'), action = flag('action'), target = flag('target');
+  if (!action || !target) die('usage: hitl propose --request R --action A --target T --reversible <t|f> --confidence 0..1 --rationale "..." --by worker');
+  withLock(() => {
+    const props = load(F.proposals, { version: 1, proposals: [] });
+    const id = nextId(props.proposals, 'P-');
+    const p = {
+      id, request_id: request || null, action, target,
+      amount: flag('amount') != null ? Number(flag('amount')) : null,
+      body: flag('body') || null,
+      reversible: /^t(rue)?$/i.test(flag('reversible') || ''),
+      confidence: flag('confidence') != null ? Number(flag('confidence')) : null,
+      rationale: flag('rationale') || '',
+      by: flag('by') || 'worker',
+      status: 'proposed', level: null, routed_reason: null,
+      created_at: nowISO(),
+    };
+    props.proposals.push(p);
+    save(F.proposals, props);
+    audit(`PROPOSE ${id} ${action}->${target}${p.amount != null ? ' $' + p.amount : ''} reversible=${p.reversible} conf=${p.confidence} by=${p.by}`);
+    console.log(c(`✓ ${id} proposed`, 'auto') + c(`  (${action} → ${target})`, 'dim'));
+    if (IRREVERSIBLE.has(action)) {
+      const msg = process.env.HITL_NO_FLOOR === '1'
+        ? '  ⚠ irreversible class — floor is OFF this round, so this CAN auto-execute'
+        : '  ⚠ irreversible class — the floor will force human approval regardless of gate level';
+      console.log(c(msg, 'approve'));
+    }
+  });
+}
+
+function cmdRoute() {
+  const id = rest[0];
+  const level = flag('level'), reason = flag('reason') || '', by = flag('by') || 'gate';
+  if (!id || !['auto','review','approve','block'].includes(level || ''))
+    die('usage: hitl route <proposalId> --level <auto|review|approve|block> --reason "..." --by gate');
+  withLock(() => {
+    const props = load(F.proposals, { version: 1, proposals: [] });
+    const p = findProposal(props, id);
+    if (p.status !== 'proposed') { console.error(c(`✗ ${id} already ${p.status}`, 'block')); process.exit(1); }
+
+    // ── GOVERNANCE FLOOR ──────────────────────────────────────────────────
+    // Structural, keyed on the typed action class — not text matching. Round 1
+    // runs with HITL_NO_FLOOR=1 to expose the raw damage; Round 2 turns it on.
+    const floorOn = process.env.HITL_NO_FLOOR !== '1';
+    let effective = level, override = false;
+    if (floorOn && IRREVERSIBLE.has(p.action) && (level === 'auto' || level === 'review')) {
+      effective = 'approve'; override = true;
+      audit(`FLOOR-OVERRIDE ${id} ${p.action} gate-said=${level} forced=approve (irreversible class)`);
+    }
+
+    p.level = effective; p.routed_reason = reason;
+    audit(`ROUTE ${id} level=${effective}${override ? `(OVERRIDE from ${level})` : ''} by=${by} reason="${reason}"`);
+
+    if (effective === 'block') {
+      p.status = 'blocked';
+      save(F.proposals, props);
+      audit(`BLOCK ${id} ${p.action}->${p.target}`);
+      console.log(c(`⛔ ${id} blocked`, 'block') + c(`  ${reason}`, 'dim'));
+      return;
+    }
+
+    if (effective === 'auto' || effective === 'review') {
+      const world = load(F.world, { version: 1 });
+      applyAction(p, world);
+      save(F.world, world);
+      p.status = effective === 'auto' ? 'applied' : 'applied-review';
+      // 'review' = proceed now, but leave an informational trail in the queue
+      if (effective === 'review') {
+        const q = load(F.queue, { version: 1, items: [] });
+        q.items.push({ id: nextId(q.items, 'Q-'), proposal_id: id, kind: 'review',
+          summary: `${p.action} → ${p.target}`, status: 'logged', reason, created_at: nowISO() });
+        save(F.queue, q);
+      }
+      save(F.proposals, props);
+      audit(`APPLY ${id} ${p.action}->${p.target}${p.amount != null ? ' $' + p.amount : ''} via=${effective}`);
+      console.log(c(`▶ ${id} ${effective} → applied`, effective) + c(`  ${reason}`, 'dim'));
+      return;
+    }
+
+    // effective === 'approve' → enqueue, block on the human
+    const q = load(F.queue, { version: 1, items: [] });
+    const qid = nextId(q.items, 'Q-');
+    const expires = new Date(Date.now() + TIMEOUT_MIN * 60000).toISOString();
+    q.items.push({ id: qid, proposal_id: id, kind: 'approval',
+      summary: `${p.action} → ${p.target}${p.amount != null ? ' $' + p.amount : ''}`,
+      status: 'pending', reason, governance_override: override,
+      created_at: nowISO(), expires_at: expires, decided_by: null, decided_at: null });
+    p.status = 'queued';
+    save(F.queue, q); save(F.proposals, props);
+    audit(`ENQUEUE ${qid} <- ${id} ${p.action}->${p.target}${override ? ' (floor override)' : ''}`);
+    console.log(c(`⏸ ${qid} queued for human approval`, 'approve') + c(`  ${override ? '(governance floor forced this)' : reason}`, 'dim'));
+  });
+}
+
+function queueItem(q, qid) {
+  const it = q.items.find(x => x.id === qid);
+  if (!it) throw new Error(`queue item ${qid} not found`);
+  return it;
+}
+
+function decide(qid, newStatus, { reason, by, editTo } = {}) {
+  withLock(() => {
+    const q = load(F.queue, { version: 1, items: [] });
+    const it = queueItem(q, qid);
+    if (it.status !== 'pending') { console.error(c(`✗ ${qid} already ${it.status}`, 'block')); process.exit(1); }
+    const props = load(F.proposals, { version: 1, proposals: [] });
+    const p = findProposal(props, it.proposal_id);
+
+    it.status = newStatus; it.decided_by = by || 'human'; it.decided_at = nowISO();
+    if (reason) it.reason = reason;
+
+    if (newStatus === 'approved' || newStatus === 'edited') {
+      if (editTo != null) {
+        // edit applies to amount if numeric, else to body
+        if (/^\d+(\.\d+)?$/.test(editTo)) p.amount = Number(editTo); else p.body = editTo;
+        it.edited_to = editTo;
+      }
+      const world = load(F.world, { version: 1 });
+      applyAction(p, world);
+      save(F.world, world);
+      p.status = 'applied';
+      audit(`${newStatus.toUpperCase()} ${qid} -> APPLY ${p.id} ${p.action}->${p.target}${p.amount != null ? ' $' + p.amount : ''} by=${it.decided_by}${editTo != null ? ` edited="${editTo}"` : ''}`);
+    } else if (newStatus === 'rejected') {
+      p.status = 'rejected';
+      audit(`REJECT ${qid} (${p.id}) by=${it.decided_by} reason="${reason || ''}"`);
+    } else if (newStatus === 'escalated') {
+      it.status = 'pending'; // re-open for the senior reviewer
+      it.escalated_to = editTo || 'senior';
+      it.escalated_by = by || 'human';
+      audit(`ESCALATE ${qid} (${p.id}) to=${it.escalated_to} by=${it.escalated_by}`);
+    }
+    save(F.queue, q); save(F.proposals, props);
+  });
+}
+
+function cmdList() {
+  const q = load(F.queue, { version: 1, items: [] });
+  const showAll = has('all');
+  const items = q.items.filter(it => showAll || it.status === 'pending');
+  if (!items.length) { console.log(c('  (no ' + (showAll ? '' : 'pending ') + 'items)', 'dim')); return; }
+  for (const it of items) {
+    const flagOverride = it.governance_override ? c(' ⚠floor', 'approve') : '';
+    console.log(`  ${c(it.id, 'dim')}  ${c(it.status.padEnd(9), it.status)}  ${it.summary}${flagOverride}  ${c('— ' + (it.reason || ''), 'dim')}`);
+  }
+}
+
+function cmdShow() {
+  const qid = rest[0]; if (!qid) die('usage: hitl show <queueId>');
+  const q = load(F.queue, { version: 1, items: [] });
+  const it = queueItem(q, qid);
+  const props = load(F.proposals, { version: 1, proposals: [] });
+  const p = props.proposals.find(x => x.id === it.proposal_id);
+  console.log(JSON.stringify({ queue: it, proposal: p }, null, 2));
+}
+
+function cmdStatus() {
+  const props = load(F.proposals, { version: 1, proposals: [] });
+  const q = load(F.queue, { version: 1, items: [] });
+  const world = load(F.world, { version: 1 });
+  const byStatus = {};
+  for (const p of props.proposals) byStatus[p.status] = (byStatus[p.status] || 0) + 1;
+  const pending = q.items.filter(i => i.status === 'pending').length;
+  console.log(c('proposals: ', 'bold') + Object.entries(byStatus).map(([k, v]) => `${v} ${k}`).join(' · ') || '(none)');
+  console.log(c('queue: ', 'bold') + `${pending} pending · ${q.items.length} total`);
+  console.log(c('world: ', 'bold') + `${Object.keys(world.records || {}).length} records · ${(world.outbox || []).length} sent · ${(world.applied || []).length} actions applied`);
+}
+
+function cmdExpire() {
+  withLock(() => {
+    const q = load(F.queue, { version: 1, items: [] });
+    const now = Date.now();
+    let n = 0;
+    for (const it of q.items) {
+      if (it.status === 'pending' && it.expires_at && Date.parse(it.expires_at) < now) {
+        it.status = 'expired'; it.decided_at = nowISO();
+        audit(`EXPIRE ${it.id} (${it.proposal_id}) — fail-safe: NOT applied`);
+        n++;
+      }
+    }
+    save(F.queue, q);
+    console.log(c(`${n} item(s) expired (fail-safe: not applied)`, 'expired'));
+  });
+}
+
+function cmdAudit() {
+  if (!fs.existsSync(F.audit)) { console.log(c('  (audit.log empty)', 'dim')); return; }
+  const lines = fs.readFileSync(F.audit, 'utf8').trimEnd().split('\n');
+  const tail = flag('tail') ? Number(flag('tail')) : lines.length;
+  for (const l of lines.slice(-tail)) console.log('  ' + l);
+}
+
+const dispatch = {
+  propose: cmdPropose, route: cmdRoute, list: cmdList, show: cmdShow,
+  approve:  () => decide(rest[0], 'approved',  { by: flag('by') }),
+  reject:   () => decide(rest[0], 'rejected',  { by: flag('by'), reason: flag('reason') }),
+  edit:     () => decide(rest[0], 'edited',    { by: flag('by'), editTo: flag('to') }),
+  escalate: () => decide(rest[0], 'escalated', { by: flag('by'), editTo: flag('to') }),
+  expire: cmdExpire, status: cmdStatus, audit: cmdAudit,
+};
+const fn = dispatch[cmd];
+if (!fn) {
+  console.error('usage: hitl <propose|route|list|show|approve|reject|edit|escalate|expire|status|audit> [args]');
+  process.exit(2);
+}
+try { fn(); } catch (e) { console.error('✗ ' + e.message); process.exit(1); }

@@ -57,13 +57,13 @@ This:
 
 1. Archives any previous run (`runs/<ts>-blackboard.md` + `runs/<ts>-tasks.json`)
 2. Resets `blackboard.md` from `blackboard.template.md` and `tasks.json` from `tasks.template.json`
-3. Resets `project/` to its starter state (just `package.json` + `src/cli.ts` stub)
+3. Resets `project/` from `project.template/` (a `package.json` + a stub `src/cli.ts`)
 4. Opens tmux with 4 panes:
    - top-left: live mirror (`bb-watch.sh`)
-   - other three: `claude --agent frontend` / `--agent backend` / `--agent tests`
-5. After 8s warm-up, auto-pastes the kickoff into each agent
+   - other three: three `claude` agents — frontend · backend · tests
+5. After 8s warm-up, auto-pastes each agent's kickoff, which names its role and points it at `.claude/agents/<role>.md`
 
-Each agent's system prompt comes from `.claude/agents/<role>.md` — they already know their role, the blackboard protocol, and the lessons-on-failure discipline.
+Each agent loads the shared protocol from `CLAUDE.md` automatically and reads its role-specific brief from `.claude/agents/<role>.md` (the kickoff names which). Default model is **haiku** (three parallel agents for an hour); override with `LAB5_MODEL=sonnet ./lab5-up.sh` for richer code at higher cost.
 
 ---
 
@@ -129,7 +129,7 @@ Then write your one-line answer: *"What single change would you make to your tea
 - `task.md` — the build brief (tiny-crm-cli)
 - `blackboard.template.md` — starter blackboard with sections
 - `tasks.template.json` — 12 starter tasks with `requires` tags
-- `project/` — starter code (package.json + src/cli.ts stub)
+- `project.template/` — starter code (package.json + src/cli.ts stub); copied to `project/` (gitignored) each run
 - `task-cli/task` — atomic claim CLI (lifted from Lab 2)
 - `bb-watch.sh` — live mirror of blackboard.md
 - `eval-self.sh` — debrief metrics script (L1 / L2 / L3)

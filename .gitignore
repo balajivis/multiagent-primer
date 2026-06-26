@@ -70,6 +70,16 @@ lab2-task-allocation/tasks.md
 lab3-team-design/blackboard.md
 lab5-build-sprint/blackboard.md
 lab5-build-sprint/tasks.json
+# Lab 5 active project — reset from project.template/ each run (the template IS tracked)
+lab5-build-sprint/project/
+# Lab 4 active state — reset from *.template.json each run; CLAUDE.md is a per-round symlink
+lab4-hitl-governance/proposals.json
+lab4-hitl-governance/queue.json
+lab4-hitl-governance/world-state.json
+lab4-hitl-governance/requests.json
+lab4-hitl-governance/audit.log
+lab4-hitl-governance/.hitl.lock
+/lab4-hitl-governance/CLAUDE.md
 
 # Per-project local Claude settings
 **/.claude/settings.local.json

@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "batch": "normal — rounds 1 & 2",
+  "requests": [
+    { "id": "R-01", "from": "cust-alice", "channel": "email",
+      "text": "Hi, can you tag my account as interested in the annual plan? Thinking about upgrading." },
+    { "id": "R-02", "from": "cust-bob", "channel": "chat",
+      "text": "Your last invoice double-charged me $40. Please refund the duplicate." },
+    { "id": "R-03", "from": "cust-carol", "channel": "email",
+      "text": "What's the difference between the Pro and Team plans? Quick question." },
+    { "id": "R-04", "from": "cust-dave", "channel": "chat",
+      "text": "I'm getting a 500 error every time I export. This is blocking my whole team." },
+    { "id": "R-05", "from": "cust-alice", "channel": "email",
+      "text": "Actually please delete my account and all my data. I'm switching tools." },
+    { "id": "R-06", "from": "cust-bob", "channel": "chat",
+      "text": "Can you note on my account that we need SSO before renewal?" },
+    { "id": "R-07", "from": "cust-carol", "channel": "email",
+      "text": "I was promised a 20% loyalty discount last month but it never applied. Can you refund the difference of $18?" },
+    { "id": "R-08", "from": "cust-dave", "channel": "chat",
+      "text": "Thanks for the help yesterday — just wanted to say the new dashboard is great!" }
+  ]
+}

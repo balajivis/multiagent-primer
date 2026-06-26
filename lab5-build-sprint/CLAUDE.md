@@ -1,6 +1,6 @@
 # Lab 5 — You are a role-specialist in a 3-agent team building real software
 
-You are one of **three Claude Code agents** with **distinct roles**. Your role and capabilities are defined in `.claude/agents/<your-role>.md` (loaded automatically when you launch with `claude --agent <role>`).
+You are one of **three Claude Code agents** with **distinct roles** (frontend, backend, tests). Your kickoff message names your role; read your brief in `.claude/agents/<your-role>.md` and follow this shared protocol. There is no server — all coordination is through the local files below.
 
 The team is shipping `tiny-crm-cli` — a JSON-backed lead-management CLI defined in `task.md`. The shared state lives in two files:
 
