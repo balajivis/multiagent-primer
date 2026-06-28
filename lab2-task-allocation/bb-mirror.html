@@ -231,6 +231,110 @@ p{margin:0}
 .explain .col p{font-family:var(--sans);font-size:12.5px;line-height:1.55;color:var(--ink-2)}
 .explain .col p + p{margin-top:8px}
 .explain .col code{font-family:var(--mono);font-size:11px;color:var(--accent)}
+
+/* project input card */
+.project-card{
+  display:grid;grid-template-columns:1fr auto;gap:24px;align-items:end;
+  padding:22px 64px 22px;border-bottom:1px solid var(--line);
+  background:var(--paper-card);
+}
+.project-card .project-label{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:0.22em;
+  color:var(--muted);text-transform:uppercase;margin-bottom:8px;
+}
+.project-card .project-label em{color:var(--accent);font-style:italic;font-family:var(--serif);text-transform:none;letter-spacing:0;font-size:13px}
+.project-card textarea{
+  width:100%;resize:vertical;min-height:64px;
+  font-family:var(--serif);font-size:19px;font-style:italic;color:var(--ink);
+  background:transparent;border:0;border-bottom:1.5px solid var(--ink);
+  padding:6px 0 8px;outline:none;line-height:1.4;
+}
+.project-card textarea::placeholder{color:var(--muted-2);font-style:italic}
+.project-card textarea:focus{border-bottom-color:var(--accent)}
+.project-card .project-hint{
+  font-family:var(--sans);font-size:12px;line-height:1.5;color:var(--ink-2);margin-top:8px;
+}
+.project-card .project-hint code{font-family:var(--mono);font-size:11px;color:var(--accent)}
+.project-card .project-actions{display:flex;flex-direction:column;gap:8px}
+.btn{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:0.22em;text-transform:uppercase;
+  padding:11px 22px;border:1px solid var(--ink);background:var(--ink);color:var(--paper);
+  cursor:pointer;transition:opacity 120ms ease,background 120ms ease;
+  white-space:nowrap;
+}
+.btn:hover{opacity:0.88}
+.btn:disabled{opacity:0.4;cursor:not-allowed}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn-ghost{background:transparent;color:var(--ink)}
+
+/* kickoff message */
+.kickoff{
+  padding:14px 64px 18px;border-bottom:1px solid var(--line);
+  background:var(--paper-2);
+}
+.kickoff .k-head{
+  display:flex;justify-content:space-between;align-items:baseline;
+  font-family:var(--mono);font-size:10px;letter-spacing:0.22em;color:var(--muted);
+  text-transform:uppercase;margin-bottom:8px;
+}
+.kickoff .k-head em{
+  font-family:var(--serif);font-style:italic;font-size:12.5px;color:var(--ink-2);
+  text-transform:none;letter-spacing:0;
+}
+.kickoff pre{
+  margin:0;padding:12px 14px;background:var(--paper);border:1px solid var(--line);
+  font-family:var(--mono);font-size:12px;line-height:1.55;color:var(--ink);
+  white-space:pre-wrap;
+}
+.kickoff code{font-family:var(--mono);font-size:11.5px;color:var(--accent);background:rgba(139,46,31,0.06);padding:0 4px}
+
+/* final task breakdown */
+.final-brief{
+  padding:36px 64px 44px;border-top:2px solid var(--ink);
+  background:linear-gradient(180deg, var(--paper) 0%, var(--paper-card) 100%);
+  display:none;
+}
+.final-brief.on{display:block}
+.final-brief .fb-head{
+  display:flex;justify-content:space-between;align-items:baseline;
+  border-bottom:1px solid var(--ink);padding-bottom:14px;margin-bottom:22px;
+}
+.final-brief .fb-title{
+  font-family:var(--serif);font-size:34px;font-weight:500;letter-spacing:-0.018em;color:var(--ink);
+}
+.final-brief .fb-title em{color:var(--accent);font-style:italic}
+.final-brief .fb-meta{
+  font-family:var(--mono);font-size:10px;letter-spacing:0.22em;color:var(--muted);text-transform:uppercase;
+}
+.final-brief .fb-intro{
+  font-family:var(--serif);font-style:italic;font-size:17px;line-height:1.5;color:var(--ink-2);
+  max-width:78ch;margin-bottom:22px;
+}
+.final-brief .fb-intro b{color:var(--accent);font-weight:500;font-style:normal}
+.fb-list{display:grid;grid-template-columns:1fr;gap:10px}
+.fb-item{
+  display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:baseline;
+  padding:12px 14px;background:var(--paper-card);border:1px solid var(--line);
+  border-left:3px solid var(--olive);
+}
+.fb-item .fb-id{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:0.18em;color:var(--muted);text-transform:uppercase;
+}
+.fb-item .fb-body{display:flex;flex-direction:column;gap:4px;min-width:0}
+.fb-item .fb-title-l{
+  font-family:var(--serif);font-style:italic;font-size:15.5px;color:var(--ink);line-height:1.35;
+}
+.fb-item .fb-result{
+  font-family:var(--sans);font-size:12.5px;color:var(--ink-2);line-height:1.5;
+}
+.fb-item .fb-meta-r{
+  font-family:var(--mono);font-size:10px;letter-spacing:0.14em;color:var(--muted);text-transform:uppercase;
+  white-space:nowrap;text-align:right;line-height:1.5;
+}
+.fb-item .fb-meta-r b{display:block;color:var(--accent);font-family:var(--serif);font-style:italic;font-size:14px;letter-spacing:0;text-transform:none;font-weight:400}
+.fb-item.k1{border-left-color:var(--teal)}
+.fb-item.k2{border-left-color:var(--accent)}
+.fb-item.k3{border-left-color:var(--gold)}
 </style>
 </head>
 <body>
@@ -256,6 +360,26 @@ p{margin:0}
       <strong id="round-label">Round —</strong>
       <span id="brief-line">8-task sprint backlog</span>
     </div>
+  </div>
+
+  <!-- PROJECT INPUT -->
+  <div class="project-card" id="project-card">
+    <div>
+      <div class="project-label">Project <em>— what are these agents building?</em></div>
+      <textarea id="project-input" rows="2" placeholder="e.g. SDRAuto — a small SaaS that automates outbound SDR workflows. Mid-sprint: shipping v1.4 (auth + signup), planning tech-debt sprint, chasing two prod bugs." autocomplete="off"></textarea>
+      <div class="project-hint" id="project-hint">The same 8-task scaffold (review · investigate · plan · QA · release · retro) gets reframed for <em>your</em> project. Agents read <code>project.md</code> at task start. Saving resets <code>tasks.json</code> and clears <code>outputs/</code>.</div>
+    </div>
+    <div class="project-actions">
+      <button id="project-submit" class="btn btn-primary">Save &amp; reset board</button>
+      <button id="project-reset"  class="btn btn-ghost">Reset only</button>
+    </div>
+  </div>
+
+  <!-- KICKOFF MESSAGE -->
+  <div class="kickoff" id="kickoff" hidden>
+    <div class="k-head"><span>Next step</span><em>after editing the project, restart the round to re-launch the three Claude panes</em></div>
+    <pre id="kickoff-pre">./lab2-down.sh && ./lab2-up.sh 1   <code>#</code> first-claim round
+./lab2-down.sh && ./lab2-up.sh 2   <code>#</code> contract-net round</pre>
   </div>
 
   <div class="legend">
@@ -368,6 +492,16 @@ p{margin:0}
       <p>Cheating shows up as hollow output, not a CLI error.</p>
     </div>
   </div>
+
+  <!-- FINAL TASK BREAKDOWN -->
+  <section class="final-brief" id="final-brief">
+    <div class="fb-head">
+      <div class="fb-title">Final <em>task breakdown</em></div>
+      <div class="fb-meta"><span id="fb-done">0</span> / <span id="fb-total">0</span> complete · <span id="fb-summary">—</span></div>
+    </div>
+    <div class="fb-intro" id="fb-intro">— awaiting completions —</div>
+    <div class="fb-list" id="fb-list"></div>
+  </section>
 
   <div class="runfoot">
     <span>Modern AI &amp; Pro · Lab 2</span>
@@ -512,6 +646,151 @@ async function poll(){
 
 poll();
 setInterval(poll, POLL_MS);
+
+// ── project input + final-brief rendering ───────────────────────────
+const projectInput  = document.getElementById('project-input');
+const projectSubmit = document.getElementById('project-submit');
+const projectReset  = document.getElementById('project-reset');
+const projectHint   = document.getElementById('project-hint');
+const kickoffBox    = document.getElementById('kickoff');
+const briefLine     = document.getElementById('brief-line');
+
+let currentProject = null;
+
+function setProjectMsg(msg, isError){
+  projectHint.innerHTML = msg;
+  projectHint.style.color = isError ? 'var(--accent)' : '';
+}
+
+async function submitProject(){
+  const description = projectInput.value.trim();
+  if(!description){ setProjectMsg('Type a project description first.', true); return; }
+  projectSubmit.disabled = true;
+  try{
+    const r = await fetch('/api/project', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({description})
+    });
+    const j = await r.json();
+    if(!r.ok){ throw new Error(j.error || 'request failed'); }
+    currentProject = description;
+    kickoffBox.hidden = false;
+    setProjectMsg('<b>project.md updated, tasks.json reset, outputs cleared.</b> Restart the round below to relaunch agents with the new project framing.');
+    updateProjectChrome();
+  } catch(e){
+    setProjectMsg('Failed: ' + e.message, true);
+  } finally {
+    projectSubmit.disabled = false;
+  }
+}
+
+async function resetBoard(){
+  projectReset.disabled = true;
+  try{
+    const r = await fetch('/api/reset', {method:'POST'});
+    if(!r.ok) throw new Error('reset failed');
+    setProjectMsg('<b>tasks.json reset</b> (project description preserved). Restart your agents to begin a new run on the same project.');
+  } catch(e){
+    setProjectMsg('Failed: ' + e.message, true);
+  } finally {
+    projectReset.disabled = false;
+  }
+}
+
+function updateProjectChrome(){
+  if(currentProject){
+    const short = currentProject.length > 64 ? currentProject.slice(0,64) + '…' : currentProject;
+    briefLine.textContent = short;
+  } else {
+    briefLine.textContent = '8-task sprint backlog';
+  }
+}
+
+function agentClass(agent){
+  const n = parseInt((agent||'').replace('agent-',''), 10);
+  if(!n) return '';
+  return 'k' + (((n-1)%3) + 1);
+}
+
+function renderFinalBrief(state){
+  const box = document.getElementById('final-brief');
+  const list = document.getElementById('fb-list');
+  const intro = document.getElementById('fb-intro');
+  const done = state.done_tasks || [];
+  document.getElementById('fb-done').textContent = (state.counts && state.counts.done) || 0;
+  document.getElementById('fb-total').textContent = state.total || 0;
+
+  if(!done.length){
+    box.classList.remove('on');
+    return;
+  }
+  box.classList.add('on');
+
+  // per-agent count for the summary line
+  const byAgent = {};
+  for(const t of done){
+    if(t.claimed_by) byAgent[t.claimed_by] = (byAgent[t.claimed_by] || 0) + 1;
+  }
+  const summary = Object.entries(byAgent)
+    .sort((a,b) => b[1] - a[1])
+    .map(([a,n]) => `${a.replace('agent-','agent ')}: ${n}`)
+    .join(' · ');
+  document.getElementById('fb-summary').textContent = summary || '—';
+
+  if(state.all_done){
+    intro.innerHTML = `<b>Sprint complete.</b> All ${state.total} tasks done. Review the per-task outputs under <code>outputs/</code> and compare distribution against the round's rule.`;
+  } else {
+    intro.innerHTML = `Live progress on <b>${currentProject ? (currentProject.length > 80 ? currentProject.slice(0,80) + '…' : currentProject) : 'the current project'}</b>. ${done.length} of ${state.total} tasks done so far — full breakdown below.`;
+  }
+
+  list.innerHTML = '';
+  for(const t of done){
+    const item = document.createElement('div');
+    item.className = `fb-item ${agentClass(t.claimed_by)}`;
+    const ts = t.completed_at ? new Date(t.completed_at).toLocaleTimeString() : '—';
+    const needs = (t.needs || []).join(' · ');
+    const result = (t.result || '').replace(/</g,'&lt;');
+    const output = (t.output || '').replace(/</g,'&lt;');
+    item.innerHTML = `
+      <span class="fb-id">${t.id}</span>
+      <div class="fb-body">
+        <div class="fb-title-l">${(t.title || '').replace(/</g,'&lt;')}</div>
+        <div class="fb-result">${result || '<em style="color:var(--muted)">no result summary</em>'}</div>
+        <div class="fb-result" style="font-family:var(--mono);font-size:11px;color:var(--muted)">→ ${output} · ${needs}</div>
+      </div>
+      <div class="fb-meta-r">
+        <b>${t.claimed_by || '—'}</b>
+        ${ts}
+      </div>
+    `;
+    list.appendChild(item);
+  }
+}
+
+async function fetchState(){
+  try{
+    const r = await fetch('/api/state?_=' + Date.now(), {cache:'no-store'});
+    if(!r.ok) return;
+    const s = await r.json();
+    if(s.project && s.project !== currentProject){
+      currentProject = s.project;
+      if(!projectInput.value) projectInput.value = currentProject;
+      kickoffBox.hidden = false;
+      updateProjectChrome();
+    }
+    renderFinalBrief(s);
+  } catch {}
+}
+
+projectSubmit.addEventListener('click', submitProject);
+projectReset.addEventListener('click', resetBoard);
+projectInput.addEventListener('keydown', e => {
+  if(e.key === 'Enter' && (e.metaKey || e.ctrlKey)){ e.preventDefault(); submitProject(); }
+});
+
+fetchState();
+setInterval(fetchState, 2000);
 </script>
 </body>
 </html>
