@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
-# bb-serve.sh — serve the editorial live mirror in a browser
+# bb-serve.sh — serve the Lab 1 Deep-Research live mirror in a browser
 #
-# Starts python3's built-in http server in this directory and opens
-# bb-mirror.html. The page polls blackboard.md once per second.
+# Boots bb-server.py (a tiny python3 server) that:
+#   - serves bb-mirror.html and the live blackboard.md
+#   - accepts POST /api/topic to set a custom research question
+#   - accepts POST /api/reset to clear the board
 #
 # usage:  ./bb-serve.sh [port]
 # default port: 8765
@@ -19,15 +21,10 @@ fi
 
 URL="http://localhost:${PORT}/bb-mirror.html"
 
-echo "▶ serving $(pwd) on port ${PORT}"
-echo "▶ live mirror: ${URL}"
-echo "▶ press Ctrl-C to stop"
-echo
-
 # open browser (best-effort, platform-specific)
 if   command -v open      >/dev/null 2>&1; then open      "$URL" 2>/dev/null &
 elif command -v xdg-open  >/dev/null 2>&1; then xdg-open  "$URL" 2>/dev/null &
 elif command -v wslview   >/dev/null 2>&1; then wslview   "$URL" 2>/dev/null &
 fi
 
-exec python3 -m http.server "$PORT" --bind 127.0.0.1
+exec python3 "$(dirname "$0")/bb-server.py" "$PORT"

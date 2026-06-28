@@ -355,6 +355,93 @@ p{margin:0}
 }
 .explain .col p + p{margin-top:8px}
 .explain .col code{font-family:var(--mono);font-size:11px;color:var(--accent)}
+
+/* topic input card */
+.topic-card{
+  display:grid;grid-template-columns:1fr auto;gap:24px;align-items:end;
+  padding:22px 64px 22px;border-bottom:1px solid var(--line);
+  background:var(--paper-card);
+}
+.topic-card .topic-label{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:0.22em;
+  color:var(--muted);text-transform:uppercase;margin-bottom:8px;
+}
+.topic-card .topic-label em{color:var(--accent);font-style:italic;font-family:var(--serif);text-transform:none;letter-spacing:0;font-size:13px}
+.topic-card input[type="text"]{
+  width:100%;
+  font-family:var(--serif);font-size:22px;font-style:italic;color:var(--ink);
+  background:transparent;border:0;border-bottom:1.5px solid var(--ink);
+  padding:6px 0 8px;outline:none;
+}
+.topic-card input[type="text"]::placeholder{color:var(--muted-2);font-style:italic}
+.topic-card input[type="text"]:focus{border-bottom-color:var(--accent)}
+.topic-card .topic-hint{
+  font-family:var(--sans);font-size:12px;line-height:1.5;color:var(--ink-2);margin-top:8px;
+}
+.topic-card .topic-hint code{font-family:var(--mono);font-size:11px;color:var(--accent)}
+.topic-card .topic-actions{display:flex;flex-direction:column;gap:8px}
+.btn{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:0.22em;text-transform:uppercase;
+  padding:11px 22px;border:1px solid var(--ink);background:var(--ink);color:var(--paper);
+  cursor:pointer;transition:opacity 120ms ease,background 120ms ease;
+  white-space:nowrap;
+}
+.btn:hover{opacity:0.88}
+.btn:disabled{opacity:0.4;cursor:not-allowed}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn-ghost{background:transparent;color:var(--ink)}
+
+/* kickoff message */
+.kickoff{
+  padding:14px 64px 18px;border-bottom:1px solid var(--line);
+  background:var(--paper-2);
+}
+.kickoff .k-head{
+  display:flex;justify-content:space-between;align-items:baseline;
+  font-family:var(--mono);font-size:10px;letter-spacing:0.22em;color:var(--muted);
+  text-transform:uppercase;margin-bottom:8px;
+}
+.kickoff .k-head em{
+  font-family:var(--serif);font-style:italic;font-size:12.5px;color:var(--ink-2);
+  text-transform:none;letter-spacing:0;
+}
+.kickoff pre{
+  margin:0;padding:12px 14px;background:var(--paper);border:1px solid var(--line);
+  font-family:var(--mono);font-size:12px;line-height:1.55;color:var(--ink);
+  white-space:pre-wrap;
+}
+.kickoff code{font-family:var(--mono);font-size:11.5px;color:var(--accent);background:rgba(139,46,31,0.06);padding:0 4px}
+
+/* final brief */
+.final-brief{
+  padding:36px 64px 44px;border-top:2px solid var(--ink);
+  background:linear-gradient(180deg, var(--paper) 0%, var(--paper-card) 100%);
+  display:none;
+}
+.final-brief.on{display:block}
+.final-brief .fb-head{
+  display:flex;justify-content:space-between;align-items:baseline;
+  border-bottom:1px solid var(--ink);padding-bottom:14px;margin-bottom:22px;
+}
+.final-brief .fb-title{
+  font-family:var(--serif);font-size:34px;font-weight:500;letter-spacing:-0.018em;color:var(--ink);
+}
+.final-brief .fb-title em{color:var(--accent);font-style:italic}
+.final-brief .fb-meta{
+  font-family:var(--mono);font-size:10px;letter-spacing:0.22em;color:var(--muted);text-transform:uppercase;
+}
+.final-brief .fb-body{
+  font-family:var(--serif);font-size:17px;line-height:1.65;color:var(--ink);text-wrap:pretty;
+  max-width:78ch;
+}
+.final-brief .fb-body h2{font-size:22px;font-weight:500;margin:22px 0 10px;letter-spacing:-0.012em}
+.final-brief .fb-body h3{font-size:18px;font-weight:500;margin:18px 0 8px;color:var(--ink-2)}
+.final-brief .fb-body p{margin:0 0 12px}
+.final-brief .fb-body ul,.final-brief .fb-body ol{margin:0 0 12px 22px}
+.final-brief .fb-body li{margin:4px 0}
+.final-brief .fb-body strong{font-weight:600;color:var(--accent)}
+.final-brief .fb-body code{font-family:var(--mono);font-size:14px;color:var(--accent);background:rgba(139,46,31,0.06);padding:1px 5px}
+.final-brief .fb-body a{color:var(--accent);text-decoration:underline;text-underline-offset:2px}
 </style>
 </head>
 <body>
@@ -377,9 +464,28 @@ p{margin:0}
       <p class="sub">Three peer agents, no coordinator, one file. Watch them duplicate work, miss gaps, and race for the synthesis. <em>The mess is the lesson.</em></p>
     </div>
     <div class="meta">
-      <strong id="task-title">Smallville brief</strong>
-      Stanford · Park et al. 2023
+      <strong id="task-title">Awaiting question</strong>
+      <span id="task-sub">Type a research question below to begin</span>
     </div>
+  </div>
+
+  <!-- TOPIC INPUT -->
+  <div class="topic-card" id="topic-card">
+    <div class="topic-left">
+      <div class="topic-label">Research question <em>— what do you want them to investigate?</em></div>
+      <input type="text" id="topic-input" placeholder="e.g. What does the evidence say about long-term semaglutide use in non-diabetic adults?" autocomplete="off" />
+      <div class="topic-hint" id="topic-hint">Three Claude agents will share one <code>blackboard.md</code> and produce a cited brief on this. They have 15 minutes.</div>
+    </div>
+    <div class="topic-actions">
+      <button id="topic-submit" class="btn btn-primary">Start research</button>
+      <button id="topic-reset"  class="btn btn-ghost">Reset board</button>
+    </div>
+  </div>
+
+  <!-- KICKOFF MESSAGE (shown after a topic is set) -->
+  <div class="kickoff" id="kickoff" hidden>
+    <div class="k-head"><span>Kickoff message</span><em>paste this into each of your three Claude Code panes, staggered ~5s apart</em></div>
+    <pre id="kickoff-pre">Read <code>task.md</code>. Register yourself on the roster. Then begin.</pre>
   </div>
 
   <!-- LEGEND / STATUS -->
@@ -439,11 +545,11 @@ p{margin:0}
       <div class="blackboard" id="blackboard">
         <div class="bb-stripe"></div>
 
-        <div class="partition" data-part="Setup">
+        <div class="partition" data-part="Background">
           <div class="p-head">
             <div>
-              <div class="p-name">Setup</div>
-              <div class="p-tag">Partition · <b>α</b> · architecture &amp; environment</div>
+              <div class="p-name">Background</div>
+              <div class="p-tag">Partition · <b>α</b> · context &amp; definitions</div>
             </div>
             <div class="p-count">entries · <em data-count>0</em></div>
           </div>
@@ -452,11 +558,11 @@ p{margin:0}
           </div>
         </div>
 
-        <div class="partition" data-part="Emergent">
+        <div class="partition" data-part="Findings">
           <div class="p-head">
             <div>
-              <div class="p-name">Emergent</div>
-              <div class="p-tag">Partition · <b>β</b> · behaviours</div>
+              <div class="p-name">Findings</div>
+              <div class="p-tag">Partition · <b>β</b> · concrete facts &amp; sources</div>
             </div>
             <div class="p-count">entries · <em data-count>0</em></div>
           </div>
@@ -465,11 +571,11 @@ p{margin:0}
           </div>
         </div>
 
-        <div class="partition" data-part="Limitations">
+        <div class="partition" data-part="Caveats">
           <div class="p-head">
             <div>
-              <div class="p-name">Limitations</div>
-              <div class="p-tag">Partition · <b>γ</b> · what broke</div>
+              <div class="p-name">Caveats</div>
+              <div class="p-tag">Partition · <b>γ</b> · what's contested or wrong</div>
             </div>
             <div class="p-count">entries · <em data-count>0</em></div>
           </div>
@@ -482,7 +588,7 @@ p{margin:0}
           <div class="p-head">
             <div>
               <div class="p-name">Implications</div>
-              <div class="p-tag">Partition · <b>δ</b> · 2026 production</div>
+              <div class="p-tag">Partition · <b>δ</b> · so what, in 2026</div>
             </div>
             <div class="p-count">entries · <em data-count>0</em></div>
           </div>
@@ -562,6 +668,15 @@ p{margin:0}
     </div>
   </div>
 
+  <!-- FINAL BRIEF -->
+  <section class="final-brief" id="final-brief">
+    <div class="fb-head">
+      <div class="fb-title">Final <em>brief</em></div>
+      <div class="fb-meta"><span id="fb-by">—</span> · <span id="fb-words">0</span> words</div>
+    </div>
+    <article class="fb-body" id="fb-body">— awaiting synthesis —</article>
+  </section>
+
   <div class="runfoot">
     <span>Modern AI Pro · Lab 1</span>
     <span>Pillars 1, 4 · Shared State · Result Sharing</span>
@@ -598,7 +713,7 @@ function agentLastSeen(agent){
 const $ = s => document.querySelector(s);
 const $$ = s => Array.from(document.querySelectorAll(s));
 
-const SECTIONS = ['Setup','Emergent','Limitations','Implications'];
+const SECTIONS = ['Background','Findings','Caveats','Implications'];
 
 function pad(n){ return String(n).padStart(2,'0'); }
 
@@ -690,8 +805,8 @@ function render(state){
   }
 
   // section partitions
-  const counts = {Setup:0, Emergent:0, Limitations:0, Implications:0};
-  const agentsBySection = {Setup:new Set(), Emergent:new Set(), Limitations:new Set(), Implications:new Set()};
+  const counts = {Background:0, Findings:0, Caveats:0, Implications:0};
+  const agentsBySection = {Background:new Set(), Findings:new Set(), Caveats:new Set(), Implications:new Set()};
   for(const f of state.findings){
     if(counts[f.section] !== undefined){
       counts[f.section]++;
@@ -807,6 +922,140 @@ async function poll(){
     $('#conn-status').textContent = 'offline · ' + e.message;
   }
 }
+
+// ── topic input + synthesis rendering ───────────────────────────────
+const topicInput  = document.getElementById('topic-input');
+const topicSubmit = document.getElementById('topic-submit');
+const topicReset  = document.getElementById('topic-reset');
+const topicHint   = document.getElementById('topic-hint');
+const kickoffBox  = document.getElementById('kickoff');
+const taskTitle   = document.getElementById('task-title');
+const taskSub     = document.getElementById('task-sub');
+
+let currentTopic = null;
+
+function setStatusMsg(msg, isError){
+  topicHint.innerHTML = msg;
+  topicHint.style.color = isError ? 'var(--accent)' : '';
+}
+
+async function submitTopic(){
+  const topic = topicInput.value.trim();
+  if(!topic){ setStatusMsg('Type a research question first.', true); return; }
+  topicSubmit.disabled = true;
+  try{
+    const r = await fetch('/api/topic', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({topic})
+    });
+    const j = await r.json();
+    if(!r.ok){ throw new Error(j.error || 'request failed'); }
+    currentTopic = topic;
+    kickoffBox.hidden = false;
+    setStatusMsg('<b>Board cleared.</b> Open three Claude Code panes (`./lab1-up.sh`) and paste the kickoff message above into each, staggered ~5 seconds apart.');
+    updateTopicChrome();
+  } catch(e){
+    setStatusMsg('Failed: ' + e.message, true);
+  } finally {
+    topicSubmit.disabled = false;
+  }
+}
+
+async function resetBoard(){
+  topicReset.disabled = true;
+  try{
+    const r = await fetch('/api/reset', {method:'POST'});
+    if(!r.ok) throw new Error('reset failed');
+    setStatusMsg('<b>Board reset.</b> Restart your three agents to begin a new run on the same question.');
+  } catch(e){
+    setStatusMsg('Failed: ' + e.message, true);
+  } finally {
+    topicReset.disabled = false;
+  }
+}
+
+function updateTopicChrome(){
+  if(currentTopic){
+    taskTitle.textContent = currentTopic.length > 64 ? currentTopic.slice(0,64) + '…' : currentTopic;
+    taskSub.textContent = 'Live research run';
+  } else {
+    taskTitle.textContent = 'Awaiting question';
+    taskSub.textContent = 'Type a research question below to begin';
+  }
+}
+
+async function fetchState(){
+  try{
+    const r = await fetch('/api/state?_=' + Date.now(), {cache:'no-store'});
+    if(!r.ok) return;
+    const s = await r.json();
+    if(s.topic && s.topic !== currentTopic){
+      currentTopic = s.topic;
+      topicInput.value = currentTopic;
+      kickoffBox.hidden = false;
+      updateTopicChrome();
+    }
+    renderSynthesis(s.synthesis);
+  } catch {}
+}
+
+// Tiny inline markdown renderer for the synthesis block — paragraphs,
+// **bold**, *italic*, `code`, [text](url), lists, h2/h3. Enough for the
+// agents' synthesis output without pulling a full library.
+function renderMd(md){
+  if(!md) return '';
+  const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const inline = s => esc(s)
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/(^|[^*])\*([^*\n]+)\*/g, '$1<em>$2</em>');
+
+  const lines = md.replace(/\r\n/g,'\n').split('\n');
+  const out = [];
+  let para = [];
+  let list = null;  // 'ul' | 'ol'
+  const flushPara = () => { if(para.length){ out.push('<p>' + inline(para.join(' ')) + '</p>'); para = []; } };
+  const flushList = () => { if(list){ out.push(`</${list}>`); list = null; } };
+
+  for(const raw of lines){
+    const line = raw.trimEnd();
+    if(/^##\s+SYNTHESIS/i.test(line)){ flushPara(); flushList(); continue; }   // we already show the title separately
+    if(/^---+$/.test(line)){ flushPara(); flushList(); continue; }
+    if(/^###\s+/.test(line)){ flushPara(); flushList(); out.push('<h3>' + inline(line.replace(/^###\s+/,'')) + '</h3>'); continue; }
+    if(/^##\s+/.test(line)){  flushPara(); flushList(); out.push('<h2>' + inline(line.replace(/^##\s+/,''))  + '</h2>'); continue; }
+    const um = line.match(/^[-*]\s+(.+)$/);
+    if(um){ flushPara(); if(list !== 'ul'){ flushList(); out.push('<ul>'); list = 'ul'; } out.push('<li>' + inline(um[1]) + '</li>'); continue; }
+    const om = line.match(/^\d+\.\s+(.+)$/);
+    if(om){ flushPara(); if(list !== 'ol'){ flushList(); out.push('<ol>'); list = 'ol'; } out.push('<li>' + inline(om[1]) + '</li>'); continue; }
+    if(!line.trim()){ flushPara(); flushList(); continue; }
+    para.push(line);
+  }
+  flushPara(); flushList();
+  return out.join('\n');
+}
+
+function renderSynthesis(synthMd){
+  const box = document.getElementById('final-brief');
+  const body = document.getElementById('fb-body');
+  if(!synthMd){ box.classList.remove('on'); return; }
+  // pull author + word count from the raw block
+  const author = (synthMd.match(/##\s+SYNTHESIS\s*\(drafted by (agent-\d+)\)/) || [,'—'])[1];
+  const wordCount = synthMd.replace(/##\s+SYNTHESIS[^\n]*\n/, '').split(/\s+/).filter(Boolean).length;
+  document.getElementById('fb-by').textContent = 'by ' + author;
+  document.getElementById('fb-words').textContent = wordCount;
+  body.innerHTML = renderMd(synthMd);
+  box.classList.add('on');
+}
+
+topicSubmit.addEventListener('click', submitTopic);
+topicReset.addEventListener('click', resetBoard);
+topicInput.addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); submitTopic(); }});
+
+// state poll runs alongside the blackboard poll
+fetchState();
+setInterval(fetchState, 2000);
 
 poll();
 setInterval(poll, POLL_MS);
