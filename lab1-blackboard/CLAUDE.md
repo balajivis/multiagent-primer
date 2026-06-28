@@ -8,6 +8,16 @@ Your team's job is to produce the brief described in `task.md`.
 
 ## Protocol (read carefully — this is the entire lesson)
 
+### 0. Check the topic version (do this BEFORE every action)
+Read `task.version` — a single integer. Remember it. **At the start of every loop iteration, re-read `task.version`. If the number changed since you last saw it, the human has reset the topic via the live mirror.** When that happens:
+
+- **Abandon** any in-progress research, citations, or draft post you were about to make. Do NOT post your prior work to the new board.
+- **Re-read `task.md` from scratch** — it now contains a different research question.
+- **Re-read `blackboard.md`** — it has been reset; the roster is empty again.
+- Re-register on the roster (step 1) and start over on the new question.
+
+The version bump is your only signal that the human steered. Honor it immediately, even mid-research.
+
 ### 1. Identify yourself
 Read `blackboard.md`. Look at the `## Roster` section.
 - If it is empty, register yourself as `agent-1`.

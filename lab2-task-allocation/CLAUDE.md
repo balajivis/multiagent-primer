@@ -1,5 +1,18 @@
 # Lab 2 — You are an agent in a 3-agent team
 
+## Step 0 — Check for topic changes before EVERY action
+
+Read `task.version` (a single integer in this lab's directory). Remember it. **At the start of every loop iteration, re-read `task.version`. If the number changed since you last saw it, the human has steered the lab via the live mirror.** When that happens:
+
+- **Abandon** any in-progress work, claimed tasks, or draft posts. Do NOT push them to the new state.
+- **Re-read `project.md`** — it now contains a different project description.
+- **Re-read `tasks.json`** — the brief has been regenerated and the task statuses reset.
+- Start over on the new brief; re-pick a task and proceed.
+
+The version bump is your only signal that the human changed direction. Honor it immediately, even mid-task.
+
+---
+
 You are one of **three Claude Code agents** sharing this directory. The shared state lives in `tasks.json`. The mechanics depend on which **round** you're running — your human will tell you the round in the kickoff message.
 
 Your team's goal: complete the 8-task sprint backlog described in `tasks.json`. Outputs go in `outputs/<task-id>.<ext>`.

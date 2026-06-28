@@ -28,6 +28,26 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
+TASK_VERSION = HERE / "task.version"  # monotonic int; agents poll this to detect scenario changes
+
+
+def bump_version() -> int:
+    """Increment task.version; agents poll this each loop and hard-reset on change."""
+    try:
+        cur = int(TASK_VERSION.read_text().strip()) if TASK_VERSION.exists() else 0
+    except Exception:
+        cur = 0
+    nxt = cur + 1
+    TASK_VERSION.write_text(str(nxt))
+    return nxt
+
+
+def current_version() -> int:
+    try:
+        return int(TASK_VERSION.read_text().strip()) if TASK_VERSION.exists() else 0
+    except Exception:
+        return 0
+
 
 SCENARIO          = HERE / "scenario.md"
 SCENARIO_TEMPLATE = HERE / "scenario.template.md"
@@ -121,6 +141,7 @@ def write_scenario(title: str, narrative: str) -> None:
     if not narrative:
         raise ValueError("scenario narrative is required")
     SCENARIO.write_text(SCENARIO_TEMPLATE_TEXT.format(title=title, narrative=narrative))
+    bump_version()
 
 
 def current_scenario() -> dict:
@@ -172,6 +193,7 @@ def state_snapshot() -> dict:
             audit_lines = []
 
     return {
+        "version": current_version(),
         "scenario": current_scenario(),
         "counts": {
             "requests": len(reqs.get("requests", []) or []),
@@ -226,14 +248,15 @@ class Handler(SimpleHTTPRequestHandler):
                 reset_state()
             except Exception as exc:  # noqa: BLE001
                 return self._json(500, {"error": str(exc)})
-            return self._json(200, {"ok": True, "scenario": current_scenario()})
+            return self._json(200, {"ok": True, "scenario": current_scenario(), "version": current_version()})
 
         if self.path == "/api/reset":
             try:
                 reset_state()
+                bump_version()
             except Exception as exc:  # noqa: BLE001
                 return self._json(500, {"error": str(exc)})
-            return self._json(200, {"ok": True})
+            return self._json(200, {"ok": True, "version": current_version()})
 
         return self._json(404, {"error": "unknown endpoint"})
 

@@ -1,5 +1,18 @@
 # Round 1 — No Gate (full autonomy)
 
+## Step 0 — Check for scenario changes before EVERY action
+
+Read `../task.version` (a single integer in the lab root, one directory up). Remember it. **At the start of every loop iteration, re-read `../task.version`. If the number changed since you last saw it, the human has steered the lab via the live mirror.** When that happens:
+
+- **Abandon** any in-progress proposal or action. Do NOT push it to the new state.
+- **Re-read `../scenario.md`** — it now contains a different scenario.
+- **Re-read `../proposals.json`, `../queue.json`, `../world-state.json`** — all have been reset.
+- Restart your role's loop on the new scenario.
+
+Honor the version bump immediately, even mid-action.
+
+---
+
 You are an agent on the SDRAuto support desk. Read `scenario.md` for the action
 vocabulary and `requests.json` for the inbound queue. Your human will tell you
 in the kickoff whether you are the **WORKER** or to stay idle — in this round

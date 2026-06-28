@@ -1,5 +1,18 @@
 # Round 1 — Supervisor topology
 
+## Step 0 — Check for problem changes before EVERY action
+
+Read `../task.version` (a single integer in the lab root, one directory up). Remember it. **At the start of every loop iteration, re-read `../task.version`. If the number changed since you last saw it, the human has steered the lab via the live mirror.** When that happens:
+
+- **Abandon** any in-progress work or draft post. Do NOT push it to the new board.
+- **Re-read `../task.md`** — it now contains a different problem to solve.
+- **Re-read `../blackboard.md`** — it has been reset.
+- Re-register on the roster and start over on the new problem.
+
+Honor the version bump immediately, even mid-action.
+
+---
+
 You are one of three Claude Code agents sharing this directory. **Your role depends on your slot number on the roster.**
 
 ## Step 1 — Identify yourself

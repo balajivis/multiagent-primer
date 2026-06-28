@@ -29,6 +29,26 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
+TASK_VERSION = HERE / "task.version"  # monotonic int; agents poll this to detect problem changes
+
+
+def bump_version() -> int:
+    """Increment task.version; agents poll this each loop and hard-reset on change."""
+    try:
+        cur = int(TASK_VERSION.read_text().strip()) if TASK_VERSION.exists() else 0
+    except Exception:
+        cur = 0
+    nxt = cur + 1
+    TASK_VERSION.write_text(str(nxt))
+    return nxt
+
+
+def current_version() -> int:
+    try:
+        return int(TASK_VERSION.read_text().strip()) if TASK_VERSION.exists() else 0
+    except Exception:
+        return 0
+
 BLACKBOARD = HERE / "blackboard.md"
 BLACKBOARD_TEMPLATE = HERE / "blackboard.template.md"
 TASK = HERE / "task.md"
@@ -107,6 +127,7 @@ def write_task(problem: str) -> None:
     if not problem:
         raise ValueError("empty problem")
     TASK.write_text(TASK_TEMPLATE.format(problem=problem))
+    bump_version()
 
 
 def current_problem() -> str | None:
@@ -279,15 +300,16 @@ class Handler(SimpleHTTPRequestHandler):
             except Exception as exc:  # noqa: BLE001
                 return self._json(500, {"error": str(exc)})
             return self._json(
-                200, {"ok": True, "problem": problem, "sections": SECTIONS}
+                200, {"ok": True, "problem": problem, "sections": SECTIONS, "version": current_version()}
             )
 
         if self.path == "/api/reset":
             try:
                 reset_blackboard()
+                bump_version()
             except Exception as exc:  # noqa: BLE001
                 return self._json(500, {"error": str(exc)})
-            return self._json(200, {"ok": True})
+            return self._json(200, {"ok": True, "version": current_version()})
 
         return self._json(404, {"error": "unknown endpoint"})
 
@@ -301,6 +323,7 @@ class Handler(SimpleHTTPRequestHandler):
                     "active_round": current_round(),
                     "round_names": ROUND_NAMES,
                     "rounds": round_summaries(),
+                    "version": current_version(),
                 },
             )
         return super().do_GET()

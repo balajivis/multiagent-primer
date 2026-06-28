@@ -27,6 +27,7 @@ HERE = Path(__file__).resolve().parent
 BLACKBOARD = HERE / "blackboard.md"
 BLACKBOARD_TEMPLATE = HERE / "blackboard.template.md"
 TASK = HERE / "task.md"
+TASK_VERSION = HERE / "task.version"  # monotonic int; agents poll this to detect topic changes
 
 # Generic four-section research template. Section names match the
 # partitions in bb-mirror.html and the SECTIONS constant in its JS.
@@ -71,6 +72,25 @@ def write_task(topic: str) -> None:
     if not topic:
         raise ValueError("empty topic")
     TASK.write_text(TASK_TEMPLATE.format(topic=topic))
+    bump_version()
+
+
+def bump_version() -> int:
+    """Increment task.version; agents poll this each loop and hard-reset on change."""
+    try:
+        cur = int(TASK_VERSION.read_text().strip()) if TASK_VERSION.exists() else 0
+    except Exception:
+        cur = 0
+    nxt = cur + 1
+    TASK_VERSION.write_text(str(nxt))
+    return nxt
+
+
+def current_version() -> int:
+    try:
+        return int(TASK_VERSION.read_text().strip()) if TASK_VERSION.exists() else 0
+    except Exception:
+        return 0
 
 
 def current_topic() -> str | None:
@@ -126,14 +146,15 @@ class Handler(SimpleHTTPRequestHandler):
                 reset_blackboard()
             except Exception as exc:  # noqa: BLE001
                 return self._json(500, {"error": str(exc)})
-            return self._json(200, {"ok": True, "topic": topic, "sections": SECTIONS})
+            return self._json(200, {"ok": True, "topic": topic, "sections": SECTIONS, "version": current_version()})
 
         if self.path == "/api/reset":
             try:
                 reset_blackboard()
+                bump_version()
             except Exception as exc:  # noqa: BLE001
                 return self._json(500, {"error": str(exc)})
-            return self._json(200, {"ok": True})
+            return self._json(200, {"ok": True, "version": current_version()})
 
         return self._json(404, {"error": "unknown endpoint"})
 
@@ -143,6 +164,7 @@ class Handler(SimpleHTTPRequestHandler):
                 "topic": current_topic(),
                 "sections": SECTIONS,
                 "synthesis": synthesis_block(),
+                "version": current_version(),
             })
         return super().do_GET()
 

@@ -1,5 +1,18 @@
 # Round 3 — Swarm topology
 
+## Step 0 — Check for problem changes before EVERY action
+
+Read `../task.version` (a single integer in the lab root, one directory up). Remember it. **At the start of every loop iteration, re-read `../task.version`. If the number changed since you last saw it, the human has steered the lab via the live mirror.** When that happens:
+
+- **Abandon** any in-progress research or draft post. Do NOT post your prior work to the new board.
+- **Re-read `../task.md`** — it now contains a different problem to solve.
+- **Re-read `../blackboard.md`** — it has been reset; the roster is empty again.
+- Re-register on the roster and start over on the new problem.
+
+The version bump is your only signal that the human changed direction. Honor it immediately, even mid-action.
+
+---
+
 You are one of three Claude Code agents sharing this directory. **No coordinator. No assigned roles. No stages.** Just three peers and a shared file.
 
 This is the same pattern as Lab 1. The point of running it again here is to feel the contrast — what does swarm produce on a problem the supervisor and pipeline rounds also tried?

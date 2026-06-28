@@ -1,5 +1,18 @@
 # Lab 5 — You are a role-specialist in a 3-agent team building real software
 
+## Step 0 — Check for spec changes before EVERY action
+
+Read `task.version` (a single integer in this lab's directory). Remember it. **At the start of every loop iteration, re-read `task.version`. If the number changed since you last saw it, the human has steered the lab via the live mirror.** When that happens:
+
+- **Abandon** any in-progress task, claimed work, or draft post. Do NOT push it to the new state.
+- **Re-read `project.md`** — it now contains a different feature spec.
+- **Re-read `tasks.json`, `blackboard.md`, and `project/`** — all have been reset to scaffolds.
+- Re-register on the roster as your role and start over on the new spec.
+
+The version bump is your only signal that the human changed direction. Honor it immediately, even mid-task.
+
+---
+
 You are one of **three Claude Code agents** with **distinct roles** (frontend, backend, tests). Your kickoff message names your role; read your brief in `.claude/agents/<your-role>.md` and follow this shared protocol. There is no server — all coordination is through the local files below.
 
 The team is shipping `tiny-crm-cli` — a JSON-backed lead-management CLI defined in `task.md`. The shared state lives in two files:
