@@ -1,0 +1,1043 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Lab 4 — HITL & Governance · Live Mirror</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Inter+Tight:wght@300;400;450;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0B0B0C; --ink-2:#1C1C1E; --ink-3:#3A3A3C;
+  --line:#D8D6D0; --line-soft:#E6E4DD;
+  --paper:#F4F2EC; --paper-2:#ECEAE3; --paper-card:#FBFAF6;
+  --muted:#6B6B6B; --muted-2:#8A8A86;
+  --accent:#8B2E1F; --accent-2:#B8674F; --accent-soft:#C58A75;
+  --teal:#2F5D62; --gold:#B08A3E; --olive:#5C6F3A;
+  --warn:#B8861F;
+  --serif:'Newsreader', 'Times New Roman', Georgia, serif;
+  --sans:'Inter Tight', ui-sans-serif, system-ui, -apple-system, Helvetica, Arial, sans-serif;
+  --mono:'JetBrains Mono', ui-monospace, Menlo, monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:#2a2722;
+  color:var(--ink);
+  font-family:var(--serif);
+  -webkit-font-smoothing:antialiased;
+  font-feature-settings:"ss01","onum","liga";
+  min-height:100vh;
+  display:grid;
+  place-items:center;
+  padding:24px 16px;
+}
+em{font-style:italic;color:var(--accent)}
+h1,h2,h3,h4,h5,h6{margin:0;font-family:var(--serif);font-weight:500;letter-spacing:-0.012em;line-height:1.05}
+p{margin:0}
+
+.frame{
+  width:1400px;max-width:100%;
+  background:var(--paper);color:var(--ink);
+  display:flex;flex-direction:column;
+  box-shadow:0 30px 80px rgba(0,0,0,0.45);
+}
+.runhead,.runfoot{
+  display:flex;justify-content:space-between;align-items:baseline;
+  padding:14px 64px;
+  font-family:var(--mono);font-size:10.5px;letter-spacing:0.22em;
+  text-transform:uppercase;color:var(--muted);
+}
+.runhead{border-bottom:1px solid var(--line)}
+.runfoot{border-top:1px solid var(--line)}
+.rh-mark{font-family:var(--serif);font-style:italic;font-weight:500;font-size:14px;letter-spacing:0;text-transform:none;color:var(--ink)}
+.rh-mark .amp{color:var(--accent)}
+
+.head{
+  display:grid;grid-template-columns:130px 1fr auto;
+  gap:36px;align-items:end;
+  padding:28px 64px 22px;border-bottom:2px solid var(--ink);
+}
+.head .num-lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:0.22em;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:6px}
+.head .num{font-family:var(--serif);font-style:italic;font-size:96px;font-weight:400;color:var(--accent);letter-spacing:-0.04em;line-height:0.88}
+.head h1{font-family:var(--serif);font-size:60px;font-weight:400;letter-spacing:-0.022em;line-height:0.95}
+.head .sub{font-family:var(--serif);font-style:italic;font-size:18px;color:var(--ink-2);line-height:1.4;margin-top:12px;max-width:62ch;text-wrap:pretty}
+.head .meta{
+  text-align:right;font-family:var(--mono);font-size:10.5px;letter-spacing:0.22em;
+  color:var(--muted);text-transform:uppercase;line-height:1.7;white-space:nowrap;
+}
+.head .meta strong{display:block;font-family:var(--serif);font-style:italic;font-weight:400;font-size:24px;color:var(--ink);letter-spacing:-0.01em;text-transform:none;margin-bottom:4px}
+
+/* scenario input card — same anatomy as Lab 1's .topic-card */
+.topic-card{
+  display:grid;grid-template-columns:1fr auto;gap:24px;align-items:end;
+  padding:22px 64px 22px;border-bottom:1px solid var(--line);
+  background:var(--paper-card);
+}
+.topic-card .topic-label{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:0.22em;
+  color:var(--muted);text-transform:uppercase;margin-bottom:8px;
+}
+.topic-card .topic-label em{color:var(--accent);font-style:italic;font-family:var(--serif);text-transform:none;letter-spacing:0;font-size:13px}
+.topic-card input[type="text"]{
+  width:100%;
+  font-family:var(--serif);font-size:22px;font-style:italic;color:var(--ink);
+  background:transparent;border:0;border-bottom:1.5px solid var(--ink);
+  padding:6px 0 8px;outline:none;
+}
+.topic-card input[type="text"]::placeholder{color:var(--muted-2);font-style:italic}
+.topic-card input[type="text"]:focus{border-bottom-color:var(--accent)}
+.topic-card textarea{
+  width:100%;
+  font-family:var(--serif);font-size:17px;color:var(--ink);
+  background:transparent;border:1px solid var(--line);
+  padding:10px 12px;outline:none;resize:vertical;
+  min-height:88px;margin-top:10px;line-height:1.45;
+}
+.topic-card textarea::placeholder{color:var(--muted-2);font-style:italic}
+.topic-card textarea:focus{border-color:var(--accent)}
+.topic-card .topic-hint{
+  font-family:var(--sans);font-size:12px;line-height:1.5;color:var(--ink-2);margin-top:8px;
+}
+.topic-card .topic-hint code{font-family:var(--mono);font-size:11px;color:var(--accent)}
+.topic-card .topic-actions{display:flex;flex-direction:column;gap:8px;align-self:end}
+.btn{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:0.22em;text-transform:uppercase;
+  padding:11px 22px;border:1px solid var(--ink);background:var(--ink);color:var(--paper);
+  cursor:pointer;transition:opacity 120ms ease,background 120ms ease;
+  white-space:nowrap;
+}
+.btn:hover{opacity:0.88}
+.btn:disabled{opacity:0.4;cursor:not-allowed}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn-ghost{background:transparent;color:var(--ink)}
+
+/* kickoff hints */
+.kickoff{
+  padding:14px 64px 18px;border-bottom:1px solid var(--line);
+  background:var(--paper-2);
+}
+.kickoff .k-head{
+  display:flex;justify-content:space-between;align-items:baseline;
+  font-family:var(--mono);font-size:10px;letter-spacing:0.22em;color:var(--muted);
+  text-transform:uppercase;margin-bottom:8px;
+}
+.kickoff .k-head em{
+  font-family:var(--serif);font-style:italic;font-size:12.5px;color:var(--ink-2);
+  text-transform:none;letter-spacing:0;
+}
+.kickoff pre{
+  margin:0;padding:12px 14px;background:var(--paper);border:1px solid var(--line);
+  font-family:var(--mono);font-size:12px;line-height:1.55;color:var(--ink);
+  white-space:pre-wrap;
+}
+.kickoff code{font-family:var(--mono);font-size:11.5px;color:var(--accent);background:rgba(139,46,31,0.06);padding:0 4px}
+
+/* legend / status bar */
+.legend{
+  display:flex;align-items:center;gap:28px;
+  padding:14px 64px;
+  border-bottom:1px solid var(--line);
+  font-family:var(--mono);font-size:10.5px;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted);
+  background:var(--paper-2);
+  flex-wrap:wrap;
+}
+.legend .item{display:flex;align-items:center;gap:8px}
+.legend .swatch{width:10px;height:10px;border-radius:50%}
+.legend .swatch.auto{background:var(--olive)}
+.legend .swatch.review{background:var(--teal)}
+.legend .swatch.approve{background:var(--warn)}
+.legend .swatch.block{background:var(--accent)}
+.legend .controls{margin-left:auto;display:flex;gap:14px;align-items:center}
+.legend .tick-meter{
+  font-family:var(--serif);font-style:italic;font-size:18px;color:var(--ink);
+  text-transform:none;letter-spacing:-0.005em;
+  display:flex;align-items:baseline;gap:8px;
+}
+.legend .tick-meter b{color:var(--accent);font-weight:400}
+.legend .tick-meter span{font-family:var(--mono);font-size:9.5px;letter-spacing:0.2em;color:var(--muted);text-transform:uppercase}
+.warn-banner{
+  display:none;align-items:center;gap:8px;
+  padding:7px 12px;border:1px solid var(--warn);background:rgba(184,134,31,0.08);
+  font-family:var(--mono);font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--warn);
+}
+.warn-banner.on{display:flex}
+
+/* stage */
+.stage{
+  display:grid;
+  grid-template-columns:240px 1fr 240px;
+  gap:0;
+  padding:28px 64px 14px;
+  position:relative;
+  min-height:520px;
+}
+.col-side{
+  display:flex;flex-direction:column;gap:10px;
+  padding-top:34px;
+}
+.col-side .col-head{
+  font-family:var(--mono);font-size:10px;letter-spacing:0.22em;color:var(--muted);text-transform:uppercase;
+  padding-bottom:10px;border-bottom:1px solid var(--line);margin-bottom:6px;
+}
+.col-side .col-head em{color:var(--accent);font-style:italic;font-family:var(--serif);text-transform:none;letter-spacing:0;font-size:13px}
+
+/* role cards (worker / gate / human) */
+.ks{
+  background:var(--paper-card);
+  border:1px solid var(--line);
+  padding:12px 12px 11px;
+  position:relative;
+}
+.ks .ks-row{display:flex;align-items:center;gap:10px}
+.ks .ks-icon{
+  width:32px;height:32px;border-radius:50%;
+  display:grid;place-items:center;
+  font-family:var(--serif);font-style:italic;font-size:15px;
+  color:var(--paper);background:var(--ink);
+  flex-shrink:0;
+}
+.ks.role-worker .ks-icon{background:var(--teal)}
+.ks.role-gate   .ks-icon{background:var(--accent)}
+.ks.role-human  .ks-icon{background:var(--gold)}
+.ks .ks-name{
+  font-family:var(--serif);font-style:italic;font-size:17px;color:var(--ink);font-weight:500;
+  line-height:1.05;
+}
+.ks .ks-tag{
+  display:block;
+  font-family:var(--mono);font-size:9px;letter-spacing:0.18em;color:var(--muted);
+  text-transform:uppercase;margin-top:3px;
+}
+.ks .ks-stats{
+  display:flex;gap:8px;margin-top:10px;
+  font-family:var(--mono);font-size:9.5px;letter-spacing:0.14em;color:var(--muted);text-transform:uppercase;
+  flex-wrap:wrap;
+}
+.ks .ks-stats .stat{display:inline-flex;align-items:center;gap:5px}
+.ks .ks-stats b{color:var(--ink);font-weight:500;font-family:var(--serif);font-size:13px;letter-spacing:0;text-transform:none}
+.ks .ks-status{
+  position:absolute;top:10px;right:10px;
+  width:8px;height:8px;border-radius:50%;
+  background:var(--line);
+}
+.ks.online .ks-status{background:var(--olive)}
+
+/* center: queue board (analog of Lab 1's blackboard, but for proposals) */
+.bb-wrap{
+  position:relative;
+  padding:34px 22px 0;
+  display:flex;flex-direction:column;
+}
+.bb-title{
+  font-family:var(--mono);font-size:10px;letter-spacing:0.22em;color:var(--muted);text-transform:uppercase;
+  padding-bottom:10px;border-bottom:1px solid var(--line);margin-bottom:14px;
+  display:flex;justify-content:space-between;align-items:baseline;
+}
+.bb-title em{color:var(--accent);font-style:italic;font-family:var(--serif);text-transform:none;letter-spacing:0;font-size:13px}
+.bb-title .right{font-family:var(--serif);font-style:italic;font-size:13px;color:var(--ink-2);text-transform:none;letter-spacing:0}
+
+.blackboard{
+  background:#0E0F11;
+  background-image:
+    radial-gradient(ellipse at 20% 30%, rgba(255,255,255,0.04), transparent 60%),
+    radial-gradient(ellipse at 80% 70%, rgba(184,103,79,0.05), transparent 60%);
+  border:1px solid var(--ink);
+  position:relative;
+  flex:1;
+  padding:18px;
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  grid-auto-rows:minmax(120px,auto);
+  gap:14px;
+  color:#E8E5DD;
+  overflow:hidden;
+  min-height:420px;
+}
+.blackboard::before{
+  content:'';position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,0.025) 1px,transparent 1px);
+  background-size:24px 24px;pointer-events:none;
+}
+.bb-stripe{
+  position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--olive),var(--teal),var(--warn),var(--accent));
+  opacity:.5;
+}
+
+.partition{
+  background:rgba(255,255,255,0.025);
+  border:1px solid rgba(255,255,255,0.10);
+  padding:14px 14px 12px;
+  position:relative;
+  display:flex;flex-direction:column;
+  min-height:0;
+  transition:all .35s cubic-bezier(.2,.7,.2,1);
+}
+.partition.flash{
+  border-color:var(--accent-soft);
+  box-shadow:inset 0 0 0 1px rgba(184,103,79,0.45), 0 0 28px rgba(184,103,79,0.18);
+  background:rgba(139,46,31,0.10);
+}
+.partition .p-head{
+  display:flex;justify-content:space-between;align-items:baseline;
+  margin-bottom:10px;padding-bottom:8px;
+  border-bottom:1px dashed rgba(255,255,255,0.16);
+}
+.partition .p-name{
+  font-family:var(--serif);font-style:italic;font-size:18px;font-weight:500;
+  color:#F4F2EC;letter-spacing:-0.005em;
+}
+.partition .p-tag{
+  font-family:var(--mono);font-size:8.5px;letter-spacing:0.22em;text-transform:uppercase;
+  color:rgba(255,255,255,0.45);
+}
+.partition .p-tag b{color:var(--accent-soft);font-weight:400}
+.partition .p-count{
+  font-family:var(--mono);font-size:9.5px;letter-spacing:0.18em;color:rgba(255,255,255,0.55);
+  text-transform:uppercase;
+}
+.partition .p-count em{color:var(--accent-soft);font-family:var(--serif);font-size:13px;text-transform:none;letter-spacing:0}
+
+.entries{
+  display:flex;flex-direction:column;gap:8px;
+  flex:1;min-height:60px;
+  color:rgba(255,255,255,0.92);
+  max-height:280px;overflow-y:auto;
+}
+.entry{
+  display:grid;grid-template-columns:auto 1fr auto;grid-template-rows:auto auto;gap:2px 10px;
+  padding:9px 11px;
+  background:rgba(0,0,0,0.22);
+  border-left:3px solid rgba(255,255,255,0.18);
+  animation:entryIn .55s cubic-bezier(.2,.7,.2,1);
+}
+.entry .e-id{
+  grid-row:1;grid-column:1;
+  font-family:var(--mono);font-size:9px;letter-spacing:0.18em;
+  color:rgba(255,255,255,0.45);text-transform:uppercase;white-space:nowrap;
+  align-self:start;padding-top:3px;
+}
+.entry .e-by{
+  grid-row:2;grid-column:1;
+  font-family:var(--mono);font-size:9px;letter-spacing:0.18em;
+  color:var(--accent-soft);text-transform:uppercase;white-space:nowrap;
+  align-self:start;
+}
+.entry .e-text{
+  grid-row:1 / span 2;grid-column:2;
+  color:#F4F2EC;
+  font-family:var(--serif);font-style:italic;font-size:14.5px;font-weight:400;
+  line-height:1.35;letter-spacing:-0.005em;
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;
+  overflow:hidden;
+}
+.entry .e-text b{color:#fff;font-weight:500;font-style:normal}
+.entry .e-pill{
+  grid-row:1;grid-column:3;align-self:start;
+  font-family:var(--mono);font-size:8.5px;letter-spacing:0.16em;text-transform:uppercase;
+  padding:2px 7px;border:1px solid rgba(255,255,255,0.25);color:rgba(255,255,255,0.75);
+  white-space:nowrap;
+}
+.entry.pending  { border-left-color:var(--warn) }
+.entry.pending  .e-pill{ color:#F2C76B; border-color:rgba(242,199,107,0.55) }
+.entry.approved { border-left-color:var(--olive) }
+.entry.approved .e-pill{ color:#A8C57B; border-color:rgba(168,197,123,0.55) }
+.entry.edited   { border-left-color:var(--accent-2) }
+.entry.edited   .e-pill{ color:var(--accent-soft); border-color:rgba(197,138,117,0.55) }
+.entry.rejected { border-left-color:var(--accent) }
+.entry.rejected .e-pill{ color:#E48A75; border-color:rgba(228,138,117,0.55) }
+.entry.escalated{ border-left-color:var(--teal) }
+.entry.escalated .e-pill{ color:#7FB7BD; border-color:rgba(127,183,189,0.55) }
+.entry.blocked  { border-left-color:var(--accent) }
+.entry.blocked  .e-pill{ color:#E48A75; border-color:rgba(228,138,117,0.55) }
+.entry.logged   { border-left-color:rgba(255,255,255,0.25) }
+.entry.expired  { border-left-color:rgba(255,255,255,0.18); opacity:0.55 }
+.entry .e-floor{
+  grid-row:2;grid-column:3;align-self:start;
+  font-family:var(--mono);font-size:8.5px;letter-spacing:0.16em;text-transform:uppercase;
+  color:var(--warn);
+}
+@keyframes entryIn{
+  from{opacity:0;transform:translateY(-6px) scale(.98)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+.partition .empty{
+  font-family:var(--serif);font-style:italic;font-size:13px;
+  color:rgba(255,255,255,0.32);
+  display:grid;place-items:center;flex:1;min-height:60px;
+}
+
+/* control / status strip */
+.control{
+  margin:0 64px;
+  background:var(--paper-card);
+  border:1px solid var(--line);
+  border-top:2px solid var(--ink);
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  align-items:stretch;
+}
+.control .ctrl-cell{
+  padding:18px 22px;
+  border-right:1px solid var(--line);
+  display:flex;flex-direction:column;gap:6px;
+}
+.control .ctrl-cell:last-child{border-right:0}
+.control .ctrl-cell .lbl{
+  font-family:var(--mono);font-size:9.5px;letter-spacing:0.22em;color:var(--muted);text-transform:uppercase;
+}
+.control .ctrl-cell .v{
+  font-family:var(--serif);font-style:italic;font-size:24px;color:var(--ink);line-height:1.2;
+}
+.control .ctrl-cell .v em{color:var(--accent)}
+.control .ctrl-cell .body{
+  font-family:var(--sans);font-size:11.5px;line-height:1.5;color:var(--ink-2);margin-top:2px;
+}
+.control .ctrl-cell .body b{color:var(--accent);font-weight:500}
+
+/* explainer */
+.explain{
+  display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:32px;
+  padding:22px 64px 28px;border-top:1px solid var(--line);
+  margin-top:14px;
+}
+.explain .lede{
+  font-family:var(--serif);font-size:18px;line-height:1.5;color:var(--ink);text-wrap:pretty;
+  font-weight:400;
+  border-left:2px solid var(--accent);padding-left:18px;
+}
+.explain .lede em{font-style:italic;color:var(--accent)}
+.explain .lede strong{font-weight:500}
+.explain .col h6{
+  font-family:var(--mono);font-size:9.5px;letter-spacing:0.22em;color:var(--muted);text-transform:uppercase;
+  padding-bottom:8px;margin-bottom:10px;border-bottom:1px solid var(--line);
+}
+.explain .col h6 em{color:var(--accent);font-style:italic;font-family:var(--serif);text-transform:none;letter-spacing:0;font-size:12px}
+.explain .col p{
+  font-family:var(--sans);font-size:12.5px;line-height:1.55;color:var(--ink-2);
+}
+.explain .col p + p{margin-top:8px}
+.explain .col code{font-family:var(--mono);font-size:11px;color:var(--accent)}
+
+/* decision log (the Lab-1 "final brief" analog) */
+.final-brief{
+  padding:36px 64px 44px;border-top:2px solid var(--ink);
+  background:linear-gradient(180deg, var(--paper) 0%, var(--paper-card) 100%);
+}
+.final-brief .fb-head{
+  display:flex;justify-content:space-between;align-items:baseline;
+  border-bottom:1px solid var(--ink);padding-bottom:14px;margin-bottom:22px;
+}
+.final-brief .fb-title{
+  font-family:var(--serif);font-size:34px;font-weight:500;letter-spacing:-0.018em;color:var(--ink);
+}
+.final-brief .fb-title em{color:var(--accent);font-style:italic}
+.final-brief .fb-meta{
+  font-family:var(--mono);font-size:10px;letter-spacing:0.22em;color:var(--muted);text-transform:uppercase;
+}
+.log-list{
+  font-family:var(--mono);font-size:12.5px;line-height:1.7;color:var(--ink-2);
+  max-height:340px;overflow-y:auto;
+  border:1px solid var(--line);background:var(--paper);
+  padding:14px 18px;
+}
+.log-list .log-row{
+  display:grid;grid-template-columns:96px 96px 1fr;gap:14px;align-items:baseline;
+  padding:3px 0;border-bottom:1px dashed var(--line-soft);
+}
+.log-list .log-row:last-child{border-bottom:0}
+.log-list .log-time{color:var(--muted)}
+.log-list .log-verb{
+  font-weight:500;letter-spacing:0.08em;text-transform:uppercase;font-size:11px;
+}
+.log-list .log-verb.PROPOSE  { color:var(--ink) }
+.log-list .log-verb.ROUTE    { color:var(--teal) }
+.log-list .log-verb.APPLY    { color:var(--olive) }
+.log-list .log-verb.ENQUEUE  { color:var(--warn) }
+.log-list .log-verb.APPROVED { color:var(--olive) }
+.log-list .log-verb.EDITED   { color:var(--accent-2) }
+.log-list .log-verb.REJECT   { color:var(--accent) }
+.log-list .log-verb.ESCALATE { color:var(--teal) }
+.log-list .log-verb.BLOCK    { color:var(--accent) }
+.log-list .log-verb.EXPIRE   { color:var(--muted) }
+.log-list .log-verb.FLOOR-OVERRIDE { color:var(--warn); background:rgba(184,134,31,0.10); padding:1px 5px }
+.log-list .log-body{color:var(--ink);font-family:var(--mono);font-size:12px}
+.log-list .empty{color:var(--muted);font-style:italic;font-family:var(--serif);text-align:center;padding:18px 0}
+</style>
+</head>
+<body>
+
+<div class="frame" id="frame">
+
+  <div class="runhead">
+    <span>Lab 04 · Multi-Agent Primer</span>
+    <span class="rh-mark">Modern AI <span class="amp">&amp;</span> Pro</span>
+    <span id="conn-status">— connecting —</span>
+  </div>
+
+  <div class="head">
+    <div>
+      <span class="num-lbl">§ Lab</span>
+      <span class="num">IV.</span>
+    </div>
+    <div>
+      <h1>HITL &amp; <em>governance.</em></h1>
+      <p class="sub">A worker proposes. A gate routes. A human approves. A floor — in <em>code</em> — overrides the gate when an action's class is irreversible. <em>Semantics from the model; hard rules from code.</em></p>
+    </div>
+    <div class="meta">
+      <strong id="scenario-title">SDRAuto Support Ops</strong>
+      <span id="scenario-sub">Default scenario · edit below to swap</span>
+    </div>
+  </div>
+
+  <!-- SCENARIO INPUT -->
+  <div class="topic-card" id="topic-card">
+    <div class="topic-left">
+      <div class="topic-label">Scenario <em>— what kind of ops desk are these agents running?</em></div>
+      <input type="text" id="scenario-name" placeholder="e.g. Acme Hospital · Patient Intake Desk" autocomplete="off" />
+      <textarea id="scenario-text" placeholder="You are agents running the patient-intake desk at Acme Hospital. A queue of inbound patient requests lands in requests.json. Your team turns each request into one concrete action against the hospital's systems (the mock world in world-state.json). Some actions are reversible (note a chart, send a portal message); some are not (discharge a patient, dispatch an ambulance, transfer funds to a billing account)."></textarea>
+      <div class="topic-hint" id="topic-hint">The <em>worker</em> and <em>gate</em> agents read this scenario. The action vocabulary (refund / delete_record / wire_transfer / reply / tag / …) stays the same — the narrative around it is yours. <code>scenario.md</code> is rewritten and queue/world reset.</div>
+    </div>
+    <div class="topic-actions">
+      <button id="scenario-submit" class="btn btn-primary">Set scenario</button>
+      <button id="scenario-reset"  class="btn btn-ghost">Reset desk</button>
+    </div>
+  </div>
+
+  <!-- KICKOFF MESSAGE -->
+  <div class="kickoff" id="kickoff" hidden>
+    <div class="k-head"><span>Kickoff messages</span><em>boot the round with <code>./lab4-up.sh 2</code> — these messages auto-send. If you launch manually:</em></div>
+    <pre id="kickoff-pre">WORKER  → Read CLAUDE.md and <code>scenario.md</code>. For each request in requests.json, propose ONE narrow action via <code>./hitl-cli/hitl propose</code>, with an honest confidence and a real rationale. Do NOT route — the gate does that. When all are proposed, say "proposals ready". Begin now.
+
+GATE    → Read CLAUDE.md, <code>scenario.md</code>, and <code>gate-policy.md</code>. Wait until proposals exist (check <code>./hitl-cli/hitl status</code>), then route EACH proposal with reasoning — reversibility, confidence, intent. Reason; never pattern-match.
+
+HUMAN   → Work the inbox: <code>./hitl-cli/hitl list</code>, then <code>show</code> / <code>approve</code> / <code>reject</code> / <code>edit</code> / <code>escalate</code> each Q-id.</pre>
+  </div>
+
+  <!-- LEGEND / STATUS -->
+  <div class="legend">
+    <div class="item"><span class="swatch auto"></span><span>auto · applied</span></div>
+    <div class="item"><span class="swatch review"></span><span>review · logged</span></div>
+    <div class="item"><span class="swatch approve"></span><span>approve · pending</span></div>
+    <div class="item"><span class="swatch block"></span><span>block · refused</span></div>
+    <div class="warn-banner" id="warn-floor">⚠ floor override · gate said auto on an irreversible class</div>
+    <div class="controls">
+      <span class="tick-meter">proposals · <b id="tick">0</b><span>routed</span></span>
+    </div>
+  </div>
+
+  <!-- STAGE -->
+  <div class="stage">
+
+    <!-- LEFT: worker + gate -->
+    <aside class="col-side">
+      <div class="col-head">Roles <em>i.</em></div>
+      <div class="ks role-worker" id="role-worker">
+        <div class="ks-status"></div>
+        <div class="ks-row">
+          <div class="ks-icon">W</div>
+          <div>
+            <div class="ks-name">Worker</div>
+            <span class="ks-tag">proposes actions</span>
+          </div>
+        </div>
+        <div class="ks-stats">
+          <span class="stat">proposed <b id="role-worker-count">0</b></span>
+          <span class="stat">reqs <b id="role-reqs-count">0</b></span>
+        </div>
+      </div>
+      <div class="ks role-gate" id="role-gate">
+        <div class="ks-status"></div>
+        <div class="ks-row">
+          <div class="ks-icon">G</div>
+          <div>
+            <div class="ks-name">Gate</div>
+            <span class="ks-tag">routes by autonomy level</span>
+          </div>
+        </div>
+        <div class="ks-stats">
+          <span class="stat">routed <b id="role-gate-count">0</b></span>
+          <span class="stat">blocks <b id="role-gate-blocks">0</b></span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- CENTER: queue / world -->
+    <div class="bb-wrap">
+      <div class="bb-title">
+        <span>The desk <em>— four partitions of agent autonomy</em></span>
+        <span class="right">live · <span id="last-mtime">—</span></span>
+      </div>
+      <div class="blackboard" id="blackboard">
+        <div class="bb-stripe"></div>
+
+        <div class="partition" data-part="auto">
+          <div class="p-head">
+            <div>
+              <div class="p-name">Auto · applied</div>
+              <div class="p-tag">Partition · <b>α</b> · human out of the loop</div>
+            </div>
+            <div class="p-count">items · <em data-count>0</em></div>
+          </div>
+          <div class="entries" data-entries>
+            <div class="empty">— nothing executed without review yet —</div>
+          </div>
+        </div>
+
+        <div class="partition" data-part="review">
+          <div class="p-head">
+            <div>
+              <div class="p-name">Review · logged</div>
+              <div class="p-tag">Partition · <b>β</b> · executed + post-hoc trail</div>
+            </div>
+            <div class="p-count">items · <em data-count>0</em></div>
+          </div>
+          <div class="entries" data-entries>
+            <div class="empty">— no review-tier actions yet —</div>
+          </div>
+        </div>
+
+        <div class="partition" data-part="approve">
+          <div class="p-head">
+            <div>
+              <div class="p-name">Approve · pending</div>
+              <div class="p-tag">Partition · <b>γ</b> · blocked on you</div>
+            </div>
+            <div class="p-count">items · <em data-count>0</em></div>
+          </div>
+          <div class="entries" data-entries>
+            <div class="empty">— inbox empty —</div>
+          </div>
+        </div>
+
+        <div class="partition" data-part="block">
+          <div class="p-head">
+            <div>
+              <div class="p-name">Block · refused</div>
+              <div class="p-tag">Partition · <b>δ</b> · never executes</div>
+            </div>
+            <div class="p-count">items · <em data-count>0</em></div>
+          </div>
+          <div class="entries" data-entries>
+            <div class="empty">— nothing refused yet —</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: human + world summary -->
+    <aside class="col-side">
+      <div class="col-head">More <em>ii.</em></div>
+      <div class="ks role-human" id="role-human">
+        <div class="ks-status"></div>
+        <div class="ks-row">
+          <div class="ks-icon">H</div>
+          <div>
+            <div class="ks-name">Human</div>
+            <span class="ks-tag">approves the queue</span>
+          </div>
+        </div>
+        <div class="ks-stats">
+          <span class="stat">decided <b id="role-human-decided">0</b></span>
+          <span class="stat">pending <b id="role-human-pending">0</b></span>
+        </div>
+      </div>
+      <div class="ks" id="world-card">
+        <div class="ks-status"></div>
+        <div class="ks-row">
+          <div class="ks-icon">★</div>
+          <div>
+            <div class="ks-name">World</div>
+            <span class="ks-tag">mock SDRAuto state</span>
+          </div>
+        </div>
+        <div class="ks-stats">
+          <span class="stat">applied <b id="world-applied">0</b></span>
+          <span class="stat">sent <b id="world-outbox">0</b></span>
+        </div>
+        <div class="ks-stats" id="world-money" style="display:none">
+          <span class="stat" style="color:var(--accent)">money moved <b id="world-money-v">—</b></span>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- CONTROL / STATUS STRIP -->
+  <div class="control">
+    <div class="ctrl-cell">
+      <span class="lbl">Pipeline</span>
+      <div class="v"><em id="pipe-prop">0</em> / <span id="pipe-req">0</span> requests routed</div>
+      <div class="body" id="pipe-body">Waiting for the worker to propose.</div>
+    </div>
+    <div class="ctrl-cell">
+      <span class="lbl">Inbox</span>
+      <div class="v" id="inbox-v"><em>0</em> pending</div>
+      <div class="body" id="inbox-body">Approve, edit, reject, escalate. Don't rubber-stamp.</div>
+    </div>
+    <div class="ctrl-cell">
+      <span class="lbl">Governance</span>
+      <div class="v" id="gov-v"><em>0</em> floor overrides</div>
+      <div class="body" id="gov-body">The floor catches what the gate's judgement misses.</div>
+    </div>
+  </div>
+
+  <!-- EXPLAINER -->
+  <div class="explain">
+    <p class="lede">
+      Three rounds, one desk. <strong>Round 1</strong> floors-off: feel the damage of full autonomy. <strong>Round 2</strong> floors-on: graduated autonomy — low-risk flows past you, irreversibles reach you. <strong>Round 3</strong>: 20 items with a wire-fraud, a prompt-injection, and a cross-account delete. The contrast is the <em>lesson.</em>
+    </p>
+    <div class="col">
+      <h6>What to <em>watch</em></h6>
+      <p>An <b>auto</b> tile fills with reversible actions the agents handled alone. An <b>approve</b> tile filling up means the gate is paging you correctly. A <b>floor override</b> banner means the code caught what the gate let slip — that's the structural rule doing its job.</p>
+    </div>
+    <div class="col">
+      <h6>The four <em>levels</em></h6>
+      <p>auto · review · approve · block (Sheridan/Verplank). The <em>gate</em> picks one per proposal using judgement; the <em>floor</em> in code refuses to let irreversibles go below <code>approve</code>. Read <code>gate-policy.md</code>.</p>
+    </div>
+  </div>
+
+  <!-- DECISION LOG (the final-brief analog) -->
+  <section class="final-brief" id="final-brief">
+    <div class="fb-head">
+      <div class="fb-title">Decision <em>log</em></div>
+      <div class="fb-meta"><span id="log-count">0</span> events · <code>audit.log</code></div>
+    </div>
+    <div class="log-list" id="log-list">
+      <div class="empty">— audit.log is empty —</div>
+    </div>
+  </section>
+
+  <div class="runfoot">
+    <span>Modern AI Pro · Lab 4</span>
+    <span>Pillars 10, 13 · Human-in-the-Loop · Governance</span>
+    <span>Live mirror · polling 1s</span>
+  </div>
+
+</div>
+
+<script>
+const POLL_MS = 1000;
+
+const $  = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+
+const PARTS = ['auto','review','approve','block'];
+
+// ── scenario input ──────────────────────────────────────────────────
+const scenarioName   = $('#scenario-name');
+const scenarioText   = $('#scenario-text');
+const scenarioSubmit = $('#scenario-submit');
+const scenarioReset  = $('#scenario-reset');
+const topicHint      = $('#topic-hint');
+const kickoffBox     = $('#kickoff');
+const titleEl        = $('#scenario-title');
+const subEl          = $('#scenario-sub');
+
+let currentScenario = null;
+let bootstrappedScenarioInput = false;
+
+function setStatusMsg(msg, isError){
+  topicHint.innerHTML = msg;
+  topicHint.style.color = isError ? 'var(--accent)' : '';
+}
+
+async function submitScenario(){
+  const title     = scenarioName.value.trim();
+  const narrative = scenarioText.value.trim();
+  if(!narrative){ setStatusMsg('Type a scenario narrative first — describe what desk the agents are running.', true); return; }
+  scenarioSubmit.disabled = true;
+  try{
+    const r = await fetch('/api/scenario', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({title, narrative})
+    });
+    const j = await r.json();
+    if(!r.ok) throw new Error(j.error || 'request failed');
+    kickoffBox.hidden = false;
+    setStatusMsg('<b>Scenario set · queue / world / audit reset.</b> Run <code>./lab4-up.sh 2</code> to launch the worker + gate + human inbox panes (or restart your current round) so the agents pick up the new scenario.');
+  } catch(e){
+    setStatusMsg('Failed: ' + e.message, true);
+  } finally {
+    scenarioSubmit.disabled = false;
+  }
+}
+
+async function resetDesk(){
+  scenarioReset.disabled = true;
+  try{
+    const r = await fetch('/api/reset', {method:'POST'});
+    if(!r.ok) throw new Error('reset failed');
+    setStatusMsg('<b>Desk reset.</b> Queue, world-state, and audit.log are empty. The scenario narrative is unchanged.');
+  } catch(e){
+    setStatusMsg('Failed: ' + e.message, true);
+  } finally {
+    scenarioReset.disabled = false;
+  }
+}
+
+function updateScenarioChrome(s){
+  if(s && s.title){
+    titleEl.textContent = s.title.length > 48 ? s.title.slice(0,48) + '…' : s.title;
+    subEl.textContent = 'Live scenario';
+  } else {
+    titleEl.textContent = 'Awaiting scenario';
+    subEl.textContent = 'Type a scenario below to begin';
+  }
+}
+
+scenarioSubmit.addEventListener('click', submitScenario);
+scenarioReset.addEventListener('click', resetDesk);
+scenarioText.addEventListener('keydown', e => {
+  if((e.metaKey || e.ctrlKey) && e.key === 'Enter'){ e.preventDefault(); submitScenario(); }
+});
+
+// ── state polling + render ──────────────────────────────────────────
+let lastFlashFinger = '';
+
+function partitionFor(item, proposal){
+  // queue items: kind='approval' → approve partition (pending) OR shows status verb when decided
+  //              kind='review'   → review partition
+  // proposals with status 'applied' (via auto) → auto partition
+  // proposals with status 'blocked' → block partition
+  if(item){
+    if(item.kind === 'review') return 'review';
+    if(item.kind === 'approval') return 'approve';
+  }
+  if(proposal){
+    if(proposal.status === 'blocked') return 'block';
+    if(proposal.status === 'applied' && proposal.level === 'auto') return 'auto';
+  }
+  return null;
+}
+
+function actionSummary(p){
+  if(!p) return '';
+  const head = `<b>${p.action}</b> → ${p.target}`;
+  const amt = (p.amount != null && p.amount !== '') ? ` · $${p.amount}` : '';
+  const body = p.body ? ` · ${String(p.body).slice(0,80)}` : '';
+  return head + amt + body;
+}
+
+function render(state){
+  // ── scenario chrome ──
+  const s = state.scenario || {};
+  if(s.title !== currentScenario){
+    currentScenario = s.title;
+    updateScenarioChrome(s);
+  }
+  // first-load: backfill the scenario inputs from server state
+  if(!bootstrappedScenarioInput && s.title){
+    if(!scenarioName.value) scenarioName.value = s.title;
+    if(!scenarioText.value && s.narrative) scenarioText.value = s.narrative;
+    bootstrappedScenarioInput = true;
+    kickoffBox.hidden = false;
+  }
+
+  const props = state.proposals || [];
+  const queue = state.queue || [];
+  const audit = state.audit || [];
+  const c     = state.counts || {};
+
+  // ── tick / role cards ──
+  $('#tick').textContent = props.filter(p => p.level).length;
+  $('#role-worker-count').textContent = props.length;
+  $('#role-reqs-count').textContent   = c.requests || 0;
+  $('#role-gate-count').textContent   = props.filter(p => p.level).length;
+  $('#role-gate-blocks').textContent  = props.filter(p => p.level === 'block').length;
+  $('#role-human-decided').textContent= queue.filter(q => q.status && q.status !== 'pending').length;
+  $('#role-human-pending').textContent= queue.filter(q => q.status === 'pending').length;
+
+  const worker = $('#role-worker'), gate = $('#role-gate'), human = $('#role-human');
+  worker.classList.toggle('online', props.length > 0);
+  gate.classList.toggle('online',   props.some(p => p.level));
+  human.classList.toggle('online',  queue.some(q => q.status && q.status !== 'pending'));
+
+  // ── world card ──
+  const w = state.world || {};
+  $('#world-applied').textContent = (w.applied || []).length;
+  $('#world-outbox').textContent  = (w.outbox  || []).length;
+  const bal = Object.entries(w.balances || {}).filter(([,v]) => v !== 0);
+  if(bal.length){
+    $('#world-money').style.display = '';
+    $('#world-money-v').textContent = bal.map(([k,v]) => `${k} ${v}`).join(' · ');
+  } else {
+    $('#world-money').style.display = 'none';
+  }
+
+  // ── partition entries ──
+  // build a lookup of proposal by id
+  const propById = {};
+  for(const p of props) propById[p.id] = p;
+
+  // each entry has: partition, status, summary, id, by
+  const byPart = { auto:[], review:[], approve:[], block:[] };
+
+  // queue items are the main story for approve + review
+  for(const it of queue){
+    const p = propById[it.proposal_id];
+    const part = partitionFor(it, p);
+    if(!part) continue;
+    byPart[part].push({
+      part, kind:'queue',
+      id: it.id,
+      proposalId: it.proposal_id,
+      status: it.status,
+      summary: actionSummary(p) || it.summary || '',
+      by: it.decided_by || (it.status === 'pending' ? 'pending' : ''),
+      floorOverride: !!it.governance_override,
+      reason: it.reason || '',
+    });
+  }
+  // proposals routed to auto OR blocked also surface in their own tiles
+  for(const p of props){
+    if(p.level === 'auto' && p.status && p.status.startsWith('applied')){
+      byPart.auto.push({
+        part:'auto', kind:'proposal',
+        id: p.id, proposalId: p.id,
+        status: 'applied',
+        summary: actionSummary(p),
+        by: p.by || 'worker',
+        floorOverride: false,
+        reason: p.routed_reason || '',
+      });
+    } else if(p.status === 'blocked'){
+      byPart.block.push({
+        part:'block', kind:'proposal',
+        id: p.id, proposalId: p.id,
+        status: 'blocked',
+        summary: actionSummary(p),
+        by: 'gate',
+        floorOverride: false,
+        reason: p.routed_reason || '',
+      });
+    }
+  }
+
+  for(const part of PARTS){
+    const node = document.querySelector(`.partition[data-part="${part}"]`);
+    if(!node) continue;
+    const items = byPart[part];
+    node.querySelector('[data-count]').textContent = items.length;
+    const entries = node.querySelector('[data-entries]');
+    if(items.length === 0){
+      entries.innerHTML = `<div class="empty">— ${part === 'approve' ? 'inbox empty' : part === 'block' ? 'nothing refused yet' : 'no ' + part + '-tier actions yet'} —</div>`;
+      continue;
+    }
+    entries.innerHTML = '';
+    // newest first, cap visible
+    items.slice().reverse().slice(0, 4).forEach(e => {
+      const row = document.createElement('div');
+      row.className = `entry ${e.status}`;
+      const pill = e.status === 'pending' ? 'pending' : (e.status || '').toUpperCase();
+      row.innerHTML = `
+        <span class="e-id">${e.id}</span>
+        <span class="e-text">${e.summary}</span>
+        <span class="e-pill">${pill}</span>
+        <span class="e-by">${e.by || ''}</span>
+        ${e.floorOverride ? '<span class="e-floor">floor</span>' : ''}
+      `;
+      entries.appendChild(row);
+    });
+  }
+
+  // flash partitions when new items arrive (fingerprint = total counts per part)
+  const finger = PARTS.map(p => byPart[p].length).join('|');
+  if(lastFlashFinger && finger !== lastFlashFinger){
+    PARTS.forEach((p, i) => {
+      const prev = parseInt(lastFlashFinger.split('|')[i] || '0', 10);
+      if(byPart[p].length > prev){
+        const node = document.querySelector(`.partition[data-part="${p}"]`);
+        if(node){
+          node.classList.add('flash');
+          setTimeout(() => node.classList.remove('flash'), 1400);
+        }
+      }
+    });
+  }
+  lastFlashFinger = finger;
+
+  // ── control strip ──
+  $('#pipe-prop').textContent = props.filter(p => p.level).length;
+  $('#pipe-req').textContent  = c.requests || 0;
+  if(props.length === 0){
+    $('#pipe-body').textContent = 'Waiting for the worker to propose.';
+  } else if(props.some(p => !p.level)){
+    $('#pipe-body').textContent = `${props.filter(p => !p.level).length} awaiting the gate.`;
+  } else {
+    $('#pipe-body').textContent = 'All proposals routed.';
+  }
+
+  const pending = queue.filter(q => q.status === 'pending');
+  $('#inbox-v').innerHTML = `<em>${pending.length}</em> pending`;
+  if(pending.length === 0){
+    $('#inbox-body').textContent = 'No items awaiting your decision.';
+  } else {
+    $('#inbox-body').innerHTML = `<b>${pending.length}</b> item(s) blocked on you — run <code>./hitl-cli/hitl list</code>.`;
+  }
+
+  const floorCount = audit.filter(l => l.includes('FLOOR-OVERRIDE')).length;
+  $('#gov-v').innerHTML = `<em>${floorCount}</em> floor overrides`;
+  $('#warn-floor').classList.toggle('on', floorCount > 0);
+  if(floorCount === 0){
+    $('#gov-body').textContent = 'The floor has not had to override the gate yet.';
+  } else {
+    $('#gov-body').innerHTML = `<b>${floorCount}</b> proposal(s) the gate let slip — caught by the irreversible-class floor.`;
+  }
+
+  // ── decision log ──
+  $('#log-count').textContent = state.audit_total || audit.length;
+  const logBox = $('#log-list');
+  if(audit.length === 0){
+    logBox.innerHTML = '<div class="empty">— audit.log is empty —</div>';
+  } else {
+    logBox.innerHTML = '';
+    // newest first
+    const VERBS = ['PROPOSE','ROUTE','APPLY','ENQUEUE','APPROVED','EDITED','REJECT','ESCALATE','BLOCK','EXPIRE','FLOOR-OVERRIDE'];
+    audit.slice().reverse().slice(0, 40).forEach(line => {
+      // line format: "2026-06-27T12:34:56.789Z  VERB args..."
+      const m = line.match(/^([0-9T:.\-Z]+)\s+(\S+)\s*(.*)$/);
+      const time = m ? m[1].slice(11,19) : '';
+      let verb = m ? m[2] : '';
+      let rest = m ? m[3] : line;
+      // normalise verb match (some are like "APPROVED Q-01" or "FLOOR-OVERRIDE P-02 ...")
+      const matchedVerb = VERBS.find(v => v === verb) || verb;
+      const row = document.createElement('div');
+      row.className = 'log-row';
+      row.innerHTML = `
+        <span class="log-time">${time}</span>
+        <span class="log-verb ${matchedVerb}">${matchedVerb}</span>
+        <span class="log-body">${escapeHtml(rest)}</span>
+      `;
+      logBox.appendChild(row);
+    });
+  }
+
+  $('#last-mtime').textContent = new Date().toLocaleTimeString();
+}
+
+function escapeHtml(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+async function poll(){
+  try{
+    const r = await fetch('/api/state?_=' + Date.now(), {cache:'no-store'});
+    if(!r.ok) throw new Error('HTTP ' + r.status);
+    const state = await r.json();
+    render(state);
+    $('#conn-status').textContent = 'live · ' + new Date().toLocaleTimeString();
+  } catch(e){
+    $('#conn-status').textContent = 'offline · ' + e.message;
+  }
+}
+
+poll();
+setInterval(poll, POLL_MS);
+</script>
+</body>
+</html>
