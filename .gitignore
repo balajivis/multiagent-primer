@@ -73,6 +73,8 @@ lab5-build-sprint/blackboard.md
 lab5-build-sprint/tasks.json
 # Lab 5 active project — reset from project.template/ each run (the template IS tracked)
 lab5-build-sprint/project/
+# Lab 5 feature spec — written by bb-server.py from project.template.md when a custom spec is seeded
+lab5-build-sprint/project.md
 # Lab 4 active state — reset from *.template.json each run; CLAUDE.md is a per-round symlink
 lab4-hitl-governance/proposals.json
 lab4-hitl-governance/queue.json

@@ -1,0 +1,1170 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Lab 5 — The Build Sprint · Live Mirror</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Inter+Tight:wght@300;400;450;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0B0B0C; --ink-2:#1C1C1E; --ink-3:#3A3A3C;
+  --line:#D8D6D0; --line-soft:#E6E4DD;
+  --paper:#F4F2EC; --paper-2:#ECEAE3; --paper-card:#FBFAF6;
+  --muted:#6B6B6B; --muted-2:#8A8A86;
+  --accent:#8B2E1F; --accent-2:#B8674F; --accent-soft:#C58A75;
+  --teal:#2F5D62; --gold:#B08A3E; --olive:#5C6F3A;
+  --warn:#B8861F;
+  --serif:'Newsreader', 'Times New Roman', Georgia, serif;
+  --sans:'Inter Tight', ui-sans-serif, system-ui, -apple-system, Helvetica, Arial, sans-serif;
+  --mono:'JetBrains Mono', ui-monospace, Menlo, monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:#2a2722;
+  color:var(--ink);
+  font-family:var(--serif);
+  -webkit-font-smoothing:antialiased;
+  font-feature-settings:"ss01","onum","liga";
+  min-height:100vh;
+  display:grid;
+  place-items:center;
+  padding:24px 16px;
+}
+em{font-style:italic;color:var(--accent)}
+h1,h2,h3,h4,h5,h6{margin:0;font-family:var(--serif);font-weight:500;letter-spacing:-0.012em;line-height:1.05}
+p{margin:0}
+
+.frame{
+  width:1400px;max-width:100%;
+  background:var(--paper);color:var(--ink);
+  display:flex;flex-direction:column;
+  box-shadow:0 30px 80px rgba(0,0,0,0.45);
+}
+.runhead,.runfoot{
+  display:flex;justify-content:space-between;align-items:baseline;
+  padding:14px 64px;
+  font-family:var(--mono);font-size:10.5px;letter-spacing:0.22em;
+  text-transform:uppercase;color:var(--muted);
+}
+.runhead{border-bottom:1px solid var(--line)}
+.runfoot{border-top:1px solid var(--line)}
+.rh-mark{font-family:var(--serif);font-style:italic;font-weight:500;font-size:14px;letter-spacing:0;text-transform:none;color:var(--ink)}
+.rh-mark .amp{color:var(--accent)}
+
+.head{
+  display:grid;grid-template-columns:130px 1fr auto;
+  gap:36px;align-items:end;
+  padding:28px 64px 22px;border-bottom:2px solid var(--ink);
+}
+.head .num-lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:0.22em;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:6px}
+.head .num{font-family:var(--serif);font-style:italic;font-size:96px;font-weight:400;color:var(--accent);letter-spacing:-0.04em;line-height:0.88}
+.head h1{font-family:var(--serif);font-size:60px;font-weight:400;letter-spacing:-0.022em;line-height:0.95}
+.head .sub{font-family:var(--serif);font-style:italic;font-size:18px;color:var(--ink-2);line-height:1.4;margin-top:12px;max-width:62ch;text-wrap:pretty}
+.head .meta{
+  text-align:right;font-family:var(--mono);font-size:10.5px;letter-spacing:0.22em;
+  color:var(--muted);text-transform:uppercase;line-height:1.7;white-space:nowrap;
+}
+.head .meta strong{display:block;font-family:var(--serif);font-style:italic;font-weight:400;font-size:24px;color:var(--ink);letter-spacing:-0.01em;text-transform:none;margin-bottom:4px;max-width:32ch;white-space:normal;text-align:right}
+
+/* topic / spec input card (matches Lab 1 .topic-card exactly) */
+.topic-card{
+  display:grid;grid-template-columns:1fr auto;gap:24px;align-items:end;
+  padding:22px 64px 22px;border-bottom:1px solid var(--line);
+  background:var(--paper-card);
+}
+.topic-card .topic-label{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:0.22em;
+  color:var(--muted);text-transform:uppercase;margin-bottom:8px;
+}
+.topic-card .topic-label em{color:var(--accent);font-style:italic;font-family:var(--serif);text-transform:none;letter-spacing:0;font-size:13px}
+.topic-card input[type="text"]{
+  width:100%;
+  font-family:var(--serif);font-size:22px;font-style:italic;color:var(--ink);
+  background:transparent;border:0;border-bottom:1.5px solid var(--ink);
+  padding:6px 0 8px;outline:none;
+}
+.topic-card input[type="text"]::placeholder{color:var(--muted-2);font-style:italic}
+.topic-card input[type="text"]:focus{border-bottom-color:var(--accent)}
+.topic-card .topic-hint{
+  font-family:var(--sans);font-size:12px;line-height:1.5;color:var(--ink-2);margin-top:8px;
+}
+.topic-card .topic-hint code{font-family:var(--mono);font-size:11px;color:var(--accent)}
+.topic-card .topic-actions{display:flex;flex-direction:column;gap:8px}
+.btn{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:0.22em;text-transform:uppercase;
+  padding:11px 22px;border:1px solid var(--ink);background:var(--ink);color:var(--paper);
+  cursor:pointer;transition:opacity 120ms ease,background 120ms ease;
+  white-space:nowrap;
+}
+.btn:hover{opacity:0.88}
+.btn:disabled{opacity:0.4;cursor:not-allowed}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn-ghost{background:transparent;color:var(--ink)}
+
+/* kickoff hints per role */
+.kickoff{
+  padding:14px 64px 18px;border-bottom:1px solid var(--line);
+  background:var(--paper-2);
+}
+.kickoff .k-head{
+  display:flex;justify-content:space-between;align-items:baseline;
+  font-family:var(--mono);font-size:10px;letter-spacing:0.22em;color:var(--muted);
+  text-transform:uppercase;margin-bottom:10px;
+}
+.kickoff .k-head em{
+  font-family:var(--serif);font-style:italic;font-size:12.5px;color:var(--ink-2);
+  text-transform:none;letter-spacing:0;
+}
+.kickoff .k-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:12px;
+}
+.kickoff .k-card{
+  background:var(--paper);border:1px solid var(--line);padding:12px 14px;
+  display:flex;flex-direction:column;gap:6px;
+}
+.kickoff .k-role{
+  font-family:var(--mono);font-size:9.5px;letter-spacing:0.22em;color:var(--muted);text-transform:uppercase;
+}
+.kickoff .k-role b{color:var(--accent);font-weight:500}
+.kickoff .k-body{
+  font-family:var(--sans);font-size:12px;line-height:1.5;color:var(--ink-2);
+}
+.kickoff .k-body code{font-family:var(--mono);font-size:11px;color:var(--accent);background:rgba(139,46,31,0.06);padding:0 4px}
+
+/* legend / status bar */
+.legend{
+  display:flex;align-items:center;gap:28px;
+  padding:14px 64px;
+  border-bottom:1px solid var(--line);
+  font-family:var(--mono);font-size:10.5px;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted);
+  background:var(--paper-2);
+  flex-wrap:wrap;
+}
+.legend .item{display:flex;align-items:center;gap:8px}
+.legend .swatch{width:10px;height:10px;border-radius:50%}
+.legend .swatch.inform{background:var(--teal)}
+.legend .swatch.request{background:var(--accent)}
+.legend .swatch.commit{background:var(--olive)}
+.legend .swatch.block{background:var(--warn)}
+.legend .swatch.lesson{background:var(--gold)}
+.legend .controls{margin-left:auto;display:flex;gap:14px;align-items:center}
+.legend .tick-meter{
+  font-family:var(--serif);font-style:italic;font-size:18px;color:var(--ink);
+  text-transform:none;letter-spacing:-0.005em;
+  display:flex;align-items:baseline;gap:8px;
+}
+.legend .tick-meter b{color:var(--accent);font-weight:400}
+.legend .tick-meter span{font-family:var(--mono);font-size:9.5px;letter-spacing:0.2em;color:var(--muted);text-transform:uppercase}
+.warn-banner{
+  display:none;align-items:center;gap:8px;
+  padding:7px 12px;border:1px solid var(--warn);background:rgba(184,134,31,0.08);
+  font-family:var(--mono);font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--warn);
+}
+.warn-banner.on{display:flex}
+
+/* stage */
+.stage{
+  display:grid;
+  grid-template-columns:240px 1fr 240px;
+  gap:0;
+  padding:28px 64px 14px;
+  position:relative;
+  min-height:560px;
+}
+.col-side{
+  display:flex;flex-direction:column;gap:10px;
+  padding-top:34px;
+}
+.col-side .col-head{
+  font-family:var(--mono);font-size:10px;letter-spacing:0.22em;color:var(--muted);text-transform:uppercase;
+  padding-bottom:10px;border-bottom:1px solid var(--line);margin-bottom:6px;
+}
+.col-side .col-head em{color:var(--accent);font-style:italic;font-family:var(--serif);text-transform:none;letter-spacing:0;font-size:13px}
+
+/* role/agent cards */
+.ks{
+  background:var(--paper-card);
+  border:1px solid var(--line);
+  padding:12px 12px 11px;
+  position:relative;
+  transition:all .25s cubic-bezier(.2,.7,.2,1);
+}
+.ks.firing{
+  border-color:var(--accent);border-width:1.5px;
+  background:rgba(139,46,31,0.05);
+  box-shadow:0 0 0 4px rgba(139,46,31,0.08);
+}
+.ks.idle{opacity:0.45}
+.ks.unregistered{opacity:0.3;border-style:dashed}
+.ks .ks-row{display:flex;align-items:center;gap:10px}
+.ks .ks-icon{
+  width:32px;height:32px;border-radius:50%;
+  display:grid;place-items:center;
+  font-family:var(--serif);font-style:italic;font-size:13px;
+  color:var(--paper);background:var(--ink);
+  flex-shrink:0;text-transform:uppercase;
+}
+.ks.r-frontend .ks-icon{background:var(--teal)}
+.ks.r-backend  .ks-icon{background:var(--accent)}
+.ks.r-tests    .ks-icon{background:var(--gold)}
+.ks .ks-name{
+  font-family:var(--serif);font-style:italic;font-size:17px;color:var(--ink);font-weight:500;
+  line-height:1.05;
+}
+.ks .ks-tag{
+  display:block;
+  font-family:var(--mono);font-size:9px;letter-spacing:0.18em;color:var(--muted);
+  text-transform:uppercase;margin-top:3px;
+}
+.ks .ks-stats{
+  display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;
+  font-family:var(--mono);font-size:9.5px;letter-spacing:0.14em;color:var(--muted);text-transform:uppercase;
+}
+.ks .ks-stats .stat{display:inline-flex;align-items:center;gap:5px}
+.ks .ks-stats b{color:var(--ink);font-weight:500;font-family:var(--serif);font-size:13px;letter-spacing:0;text-transform:none}
+.ks .ks-status{
+  position:absolute;top:10px;right:10px;
+  width:8px;height:8px;border-radius:50%;
+  background:var(--line);
+}
+.ks.firing .ks-status{
+  background:var(--accent);
+  animation:pulse 1.2s ease-in-out infinite;
+}
+.ks.online .ks-status{background:var(--olive)}
+@keyframes pulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(139,46,31,0.5)}
+  50%{box-shadow:0 0 0 6px rgba(139,46,31,0)}
+}
+
+/* blackboard center */
+.bb-wrap{
+  position:relative;
+  padding:34px 22px 0;
+  display:flex;flex-direction:column;
+}
+.bb-title{
+  font-family:var(--mono);font-size:10px;letter-spacing:0.22em;color:var(--muted);text-transform:uppercase;
+  padding-bottom:10px;border-bottom:1px solid var(--line);margin-bottom:14px;
+  display:flex;justify-content:space-between;align-items:baseline;
+}
+.bb-title em{color:var(--accent);font-style:italic;font-family:var(--serif);text-transform:none;letter-spacing:0;font-size:13px}
+.bb-title .right{font-family:var(--serif);font-style:italic;font-size:13px;color:var(--ink-2);text-transform:none;letter-spacing:0}
+
+.blackboard{
+  background:#0E0F11;
+  background-image:
+    radial-gradient(ellipse at 20% 30%, rgba(255,255,255,0.04), transparent 60%),
+    radial-gradient(ellipse at 80% 70%, rgba(184,103,79,0.05), transparent 60%);
+  border:1px solid var(--ink);
+  position:relative;
+  flex:1;
+  padding:18px;
+  display:flex;flex-direction:column;gap:14px;
+  color:#E8E5DD;
+  overflow:hidden;
+}
+.blackboard::before{
+  content:'';position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,0.025) 1px,transparent 1px);
+  background-size:24px 24px;pointer-events:none;
+}
+.bb-stripe{
+  position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--teal),var(--accent),var(--gold),var(--olive));
+  opacity:.5;
+}
+
+.bb-section{
+  background:rgba(255,255,255,0.025);
+  border:1px solid rgba(255,255,255,0.10);
+  padding:14px 14px 12px;
+  position:relative;
+  display:flex;flex-direction:column;min-height:0;
+}
+.bb-section .p-head{
+  display:flex;justify-content:space-between;align-items:baseline;
+  margin-bottom:10px;padding-bottom:8px;
+  border-bottom:1px dashed rgba(255,255,255,0.16);
+}
+.bb-section .p-name{
+  font-family:var(--serif);font-style:italic;font-size:18px;font-weight:500;
+  color:#F4F2EC;letter-spacing:-0.005em;
+}
+.bb-section .p-tag{
+  font-family:var(--mono);font-size:8.5px;letter-spacing:0.22em;text-transform:uppercase;
+  color:rgba(255,255,255,0.45);
+}
+.bb-section .p-tag b{color:var(--accent-soft);font-weight:400}
+
+/* performative log entries */
+.entries{
+  display:flex;flex-direction:column;gap:8px;
+  color:rgba(255,255,255,0.92);
+  max-height:240px;overflow-y:auto;
+}
+.entry{
+  display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;gap:2px 10px;
+  padding:9px 11px;
+  background:rgba(0,0,0,0.22);
+  border-left:3px solid rgba(255,255,255,0.18);
+  animation:entryIn .55s cubic-bezier(.2,.7,.2,1);
+}
+.entry .e-tick{
+  grid-row:1;grid-column:1;
+  font-family:var(--mono);font-size:9px;letter-spacing:0.18em;
+  color:rgba(255,255,255,0.45);text-transform:uppercase;white-space:nowrap;
+  align-self:start;padding-top:3px;
+}
+.entry .e-by{
+  grid-row:2;grid-column:1;
+  font-family:var(--mono);font-size:9px;letter-spacing:0.18em;
+  color:var(--accent-soft);text-transform:uppercase;white-space:nowrap;
+  align-self:start;
+}
+.entry .e-text{
+  grid-row:1 / span 2;grid-column:2;
+  color:#F4F2EC;
+  font-family:var(--serif);font-style:italic;font-size:14.5px;font-weight:400;
+  line-height:1.35;letter-spacing:-0.005em;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+  overflow:hidden;
+}
+.entry .e-text b{color:#fff;font-weight:500;font-style:normal}
+.entry.p-inform   {border-left-color:var(--teal)}
+.entry.p-inform   .e-by{color:#7FB7BD}
+.entry.p-request  {border-left-color:var(--accent)}
+.entry.p-request  .e-by{color:var(--accent-soft)}
+.entry.p-commit   {border-left-color:var(--olive)}
+.entry.p-commit   .e-by{color:#A6BA82}
+.entry.p-block    {border-left-color:var(--warn)}
+.entry.p-block    .e-by{color:#E2BC68}
+.entry.p-escalate {border-left-color:#E04A2C}
+.entry.p-escalate .e-by{color:#F0846B}
+.entry.p-lesson   {border-left-color:var(--gold)}
+.entry.p-lesson   .e-by{color:#D9B968}
+@keyframes entryIn{
+  from{opacity:0;transform:translateY(-6px) scale(.98)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+.bb-section .empty{
+  font-family:var(--serif);font-style:italic;font-size:13px;
+  color:rgba(255,255,255,0.32);
+  display:grid;place-items:center;min-height:60px;
+}
+
+/* task table */
+.tasks-table{
+  width:100%;border-collapse:collapse;
+  font-family:var(--mono);font-size:10.5px;color:rgba(255,255,255,0.86);
+}
+.tasks-table th{
+  text-align:left;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;
+  color:rgba(255,255,255,0.5);padding:6px 8px 8px;border-bottom:1px dashed rgba(255,255,255,0.18);
+  font-size:9.5px;
+}
+.tasks-table td{padding:7px 8px;border-bottom:1px solid rgba(255,255,255,0.06)}
+.tasks-table td.tid{color:var(--accent-soft);width:48px}
+.tasks-table td.title{
+  font-family:var(--serif);font-style:italic;font-size:13.5px;color:#F4F2EC;
+  letter-spacing:-0.005em;
+}
+.tasks-table td.role{font-size:9.5px;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.6);width:80px}
+.tasks-table td.role.frontend{color:#7FB7BD}
+.tasks-table td.role.backend {color:var(--accent-soft)}
+.tasks-table td.role.tests   {color:#D9B968}
+.tasks-table td.status{width:80px;text-align:right}
+.tasks-table td.status .pill{
+  display:inline-block;padding:2px 8px;border-radius:2px;
+  font-size:9px;letter-spacing:0.18em;text-transform:uppercase;
+}
+.tasks-table td.status .pill.open    {background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.55)}
+.tasks-table td.status .pill.claimed {background:rgba(184,134,31,0.22);color:#E2BC68}
+.tasks-table td.status .pill.done    {background:rgba(92,111,58,0.30);color:#B7C892}
+.tasks-table td.status .pill.failed  {background:rgba(224,74,44,0.22);color:#F0846B}
+
+/* lessons row */
+.lessons-list{
+  display:flex;flex-direction:column;gap:6px;
+  max-height:140px;overflow-y:auto;
+}
+.lesson-row{
+  display:grid;grid-template-columns:auto 1fr;gap:10px;
+  padding:7px 10px;
+  background:rgba(176,138,62,0.10);
+  border-left:3px solid var(--gold);
+}
+.lesson-row .l-by{
+  font-family:var(--mono);font-size:9px;letter-spacing:0.18em;color:#D9B968;text-transform:uppercase;
+  white-space:nowrap;align-self:start;padding-top:2px;
+}
+.lesson-row .l-text{
+  font-family:var(--serif);font-style:italic;font-size:13.5px;color:#F4F2EC;line-height:1.35;
+}
+
+/* control / status strip */
+.control{
+  margin:0 64px;
+  background:var(--paper-card);
+  border:1px solid var(--line);
+  border-top:2px solid var(--ink);
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  align-items:stretch;
+}
+.control .ctrl-cell{
+  padding:18px 22px;
+  border-right:1px solid var(--line);
+  display:flex;flex-direction:column;gap:6px;
+}
+.control .ctrl-cell:last-child{border-right:0}
+.control .ctrl-cell .lbl{
+  font-family:var(--mono);font-size:9.5px;letter-spacing:0.22em;color:var(--muted);text-transform:uppercase;
+}
+.control .ctrl-cell .v{
+  font-family:var(--serif);font-style:italic;font-size:24px;color:var(--ink);line-height:1.2;
+}
+.control .ctrl-cell .v em{color:var(--accent)}
+.control .ctrl-cell .body{
+  font-family:var(--sans);font-size:11.5px;line-height:1.5;color:var(--ink-2);margin-top:2px;
+}
+.control .ctrl-cell .body b{color:var(--accent);font-weight:500}
+.control .ctrl-cell .perf-bar{
+  display:flex;gap:2px;margin-top:6px;height:8px;
+}
+.control .ctrl-cell .perf-bar .seg{
+  flex:1;background:rgba(0,0,0,0.06);
+}
+
+/* explainer */
+.explain{
+  display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:32px;
+  padding:22px 64px 28px;border-top:1px solid var(--line);
+  margin-top:14px;
+}
+.explain .lede{
+  font-family:var(--serif);font-size:18px;line-height:1.5;color:var(--ink);text-wrap:pretty;
+  font-weight:400;
+  border-left:2px solid var(--accent);padding-left:18px;
+}
+.explain .lede em{font-style:italic;color:var(--accent)}
+.explain .lede strong{font-weight:500}
+.explain .col h6{
+  font-family:var(--mono);font-size:9.5px;letter-spacing:0.22em;color:var(--muted);text-transform:uppercase;
+  padding-bottom:8px;margin-bottom:10px;border-bottom:1px solid var(--line);
+}
+.explain .col h6 em{color:var(--accent);font-style:italic;font-family:var(--serif);text-transform:none;letter-spacing:0;font-size:12px}
+.explain .col p{
+  font-family:var(--sans);font-size:12.5px;line-height:1.55;color:var(--ink-2);
+}
+.explain .col p + p{margin-top:8px}
+.explain .col code{font-family:var(--mono);font-size:11px;color:var(--accent)}
+
+/* final delivery */
+.final-brief{
+  padding:36px 64px 44px;border-top:2px solid var(--ink);
+  background:linear-gradient(180deg, var(--paper) 0%, var(--paper-card) 100%);
+  display:none;
+}
+.final-brief.on{display:block}
+.final-brief .fb-head{
+  display:flex;justify-content:space-between;align-items:baseline;
+  border-bottom:1px solid var(--ink);padding-bottom:14px;margin-bottom:22px;
+}
+.final-brief .fb-title{
+  font-family:var(--serif);font-size:34px;font-weight:500;letter-spacing:-0.018em;color:var(--ink);
+}
+.final-brief .fb-title em{color:var(--accent);font-style:italic}
+.final-brief .fb-meta{
+  font-family:var(--mono);font-size:10px;letter-spacing:0.22em;color:var(--muted);text-transform:uppercase;
+}
+.final-brief .fb-grid{
+  display:grid;grid-template-columns:1.3fr 1fr;gap:32px;
+}
+.final-brief .fb-body{
+  font-family:var(--serif);font-size:16px;line-height:1.55;color:var(--ink);text-wrap:pretty;
+}
+.final-brief .fb-body h3{font-size:14px;font-weight:500;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin:18px 0 8px;font-family:var(--mono)}
+.final-brief .fb-body h3:first-child{margin-top:0}
+.final-brief .verdict-list{
+  list-style:none;padding:0;margin:0;
+  display:flex;flex-direction:column;gap:8px;
+}
+.final-brief .verdict-list li{
+  font-family:var(--sans);font-size:13.5px;line-height:1.5;color:var(--ink-2);
+  padding:8px 12px;background:var(--paper);border-left:3px solid var(--line);
+}
+.final-brief .verdict-list li.ok    {border-left-color:var(--olive)}
+.final-brief .verdict-list li.warn  {border-left-color:var(--warn)}
+.final-brief .verdict-list li.fail  {border-left-color:var(--accent)}
+.final-brief .files-card{
+  background:var(--paper-card);border:1px solid var(--line);padding:18px 20px;
+}
+.final-brief .files-card h3{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:0.22em;text-transform:uppercase;
+  color:var(--muted);margin:0 0 12px;
+  padding-bottom:8px;border-bottom:1px solid var(--line);
+  display:flex;justify-content:space-between;align-items:baseline;
+}
+.final-brief .files-card h3 em{font-family:var(--serif);font-style:italic;text-transform:none;letter-spacing:0;font-size:14px;color:var(--ink)}
+.final-brief .files-list{
+  list-style:none;padding:0;margin:0;
+  display:flex;flex-direction:column;
+  max-height:340px;overflow-y:auto;
+}
+.final-brief .files-list li{
+  display:flex;justify-content:space-between;gap:8px;align-items:baseline;
+  padding:6px 0;border-bottom:1px dashed var(--line-soft);
+  font-family:var(--mono);font-size:11.5px;color:var(--ink);
+}
+.final-brief .files-list li .fpath{color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.final-brief .files-list li .fpath b{color:var(--accent);font-weight:500}
+.final-brief .files-list li .fsize{color:var(--muted);font-size:10.5px;white-space:nowrap}
+.final-brief .files-empty{
+  font-family:var(--serif);font-style:italic;color:var(--muted);font-size:14px;padding:8px 0;
+}
+</style>
+</head>
+<body>
+
+<div class="frame" id="frame">
+
+  <div class="runhead">
+    <span>Lab 05 · Multi-Agent Primer</span>
+    <span class="rh-mark">Modern AI <span class="amp">&amp;</span> Pro</span>
+    <span id="conn-status">— connecting —</span>
+  </div>
+
+  <div class="head">
+    <div>
+      <span class="num-lbl">§ Lab</span>
+      <span class="num">V.</span>
+    </div>
+    <div>
+      <h1>The build <em>sprint.</em></h1>
+      <p class="sub">Three role-specialists — <em>frontend, backend, tests</em> — share a blackboard, a task queue, and a project directory. Watch performatives, claims, and lessons accumulate as they ship. <em>The coordination is the lesson.</em></p>
+    </div>
+    <div class="meta">
+      <strong id="task-title">Awaiting feature spec</strong>
+      <span id="task-sub">Describe what they should ship</span>
+    </div>
+  </div>
+
+  <!-- SPEC INPUT -->
+  <div class="topic-card" id="topic-card">
+    <div class="topic-left">
+      <div class="topic-label">Feature spec <em>— what should these agents ship?</em></div>
+      <input type="text" id="spec-input" placeholder="e.g. a link-shortener CLI with shorten / expand / list / stats, JSON storage" autocomplete="off" />
+      <div class="topic-hint" id="spec-hint">Three role-specialists will share <code>tasks.json</code>, <code>blackboard.md</code>, and <code>project/</code> to ship this. 12 starter tasks are pre-loaded; the spec reframes them. Default brief (<code>tiny-crm-cli</code>) still works if you skip this.</div>
+    </div>
+    <div class="topic-actions">
+      <button id="spec-submit" class="btn btn-primary">Seed sprint</button>
+      <button id="spec-reset"  class="btn btn-ghost">Reset workspace</button>
+    </div>
+  </div>
+
+  <!-- KICKOFF HINTS PER ROLE -->
+  <div class="kickoff" id="kickoff" hidden>
+    <div class="k-head"><span>Kickoff hints</span><em>your three Claude Code panes already received the role assignment from <code>lab5-up.sh</code> — these are the per-role briefs they'll read</em></div>
+    <div class="k-grid">
+      <div class="k-card">
+        <div class="k-role"><b>FRONTEND</b> · output, help, README</div>
+        <div class="k-body">Claims <code>frontend</code> + <code>docs</code> tasks. Owns <code>src/format.ts</code>, <code>src/help.ts</code>, <code>README.md</code>. Integrates against backend's <code>[COMMIT]</code> interfaces.</div>
+      </div>
+      <div class="k-card">
+        <div class="k-role"><b>BACKEND</b> · dispatcher, storage, commands</div>
+        <div class="k-body">Claims <code>backend</code> + <code>db</code> + <code>devops</code> tasks. Owns the CLI surface, storage, package config. Posts <code>[COMMIT]</code> when an interface is ready for frontend/tests to integrate.</div>
+      </div>
+      <div class="k-card">
+        <div class="k-role"><b>TESTS</b> · unit + smoke</div>
+        <div class="k-body">Claims <code>tests</code> tasks. Owns <code>test/*</code> + smoke script. <code>[REQUEST]</code> stable interfaces from backend before writing; <code>[BLOCK]</code> if the surface keeps shifting.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LEGEND / STATUS -->
+  <div class="legend">
+    <div class="item"><span class="swatch inform"></span><span>Inform</span></div>
+    <div class="item"><span class="swatch request"></span><span>Request</span></div>
+    <div class="item"><span class="swatch commit"></span><span>Commit</span></div>
+    <div class="item"><span class="swatch block"></span><span>Block</span></div>
+    <div class="item"><span class="swatch lesson"></span><span>Lesson</span></div>
+    <div class="warn-banner" id="warn-idle">💤 idle · no perf log in <b id="idle-secs">0</b>s</div>
+    <div class="warn-banner" id="warn-done" style="border-color:var(--olive);background:rgba(92,111,58,0.08);color:var(--olive)">✓ sprint shipped</div>
+    <div class="controls">
+      <span class="tick-meter">events · <b id="tick">0</b><span>posted</span></span>
+    </div>
+  </div>
+
+  <!-- STAGE -->
+  <div class="stage">
+
+    <!-- LEFT: frontend + tests -->
+    <aside class="col-side">
+      <div class="col-head">Specialists <em>i.</em></div>
+      <div class="ks r-frontend unregistered" data-role="frontend">
+        <div class="ks-status"></div>
+        <div class="ks-row">
+          <div class="ks-icon">FE</div>
+          <div>
+            <div class="ks-name">Frontend</div>
+            <span class="ks-tag" data-joined>not joined</span>
+          </div>
+        </div>
+        <div class="ks-stats">
+          <span class="stat">done <b data-done>0</b></span>
+          <span class="stat">claim <b data-claim>0</b></span>
+          <span class="stat">events <b data-events>0</b></span>
+        </div>
+      </div>
+      <div class="ks r-tests unregistered" data-role="tests">
+        <div class="ks-status"></div>
+        <div class="ks-row">
+          <div class="ks-icon">TE</div>
+          <div>
+            <div class="ks-name">Tests</div>
+            <span class="ks-tag" data-joined>not joined</span>
+          </div>
+        </div>
+        <div class="ks-stats">
+          <span class="stat">done <b data-done>0</b></span>
+          <span class="stat">claim <b data-claim>0</b></span>
+          <span class="stat">events <b data-events>0</b></span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- CENTER: blackboard with three sections -->
+    <div class="bb-wrap">
+      <div class="bb-title">
+        <span>Blackboard <em>— performatives · tasks · lessons</em></span>
+        <span class="right">poll 1s · <span id="last-mtime">—</span></span>
+      </div>
+      <div class="blackboard" id="blackboard">
+        <div class="bb-stripe"></div>
+
+        <div class="bb-section">
+          <div class="p-head">
+            <div>
+              <div class="p-name">Performative log</div>
+              <div class="p-tag">Section · <b>α</b> · typed agent chatter</div>
+            </div>
+            <div class="p-tag">events · <em id="ev-count">0</em></div>
+          </div>
+          <div class="entries" id="entries-log">
+            <div class="empty">— awaiting the first move —</div>
+          </div>
+        </div>
+
+        <div class="bb-section">
+          <div class="p-head">
+            <div>
+              <div class="p-name">Task ledger</div>
+              <div class="p-tag">Section · <b>β</b> · who's claimed what</div>
+            </div>
+            <div class="p-tag">tasks · <em id="task-count">0</em></div>
+          </div>
+          <div id="tasks-wrap">
+            <div class="empty">— no tasks loaded —</div>
+          </div>
+        </div>
+
+        <div class="bb-section">
+          <div class="p-head">
+            <div>
+              <div class="p-name">Lessons</div>
+              <div class="p-tag">Section · <b>γ</b> · stigmergic traces from failed claims</div>
+            </div>
+            <div class="p-tag">posted · <em id="lesson-count">0</em></div>
+          </div>
+          <div class="lessons-list" id="lessons-list">
+            <div class="empty">— no lessons yet · failures will land here —</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: backend + delivery status -->
+    <aside class="col-side">
+      <div class="col-head">More <em>ii.</em></div>
+      <div class="ks r-backend unregistered" data-role="backend">
+        <div class="ks-status"></div>
+        <div class="ks-row">
+          <div class="ks-icon">BE</div>
+          <div>
+            <div class="ks-name">Backend</div>
+            <span class="ks-tag" data-joined>not joined</span>
+          </div>
+        </div>
+        <div class="ks-stats">
+          <span class="stat">done <b data-done>0</b></span>
+          <span class="stat">claim <b data-claim>0</b></span>
+          <span class="stat">events <b data-events>0</b></span>
+        </div>
+      </div>
+      <div class="ks unregistered" id="delivery-card">
+        <div class="ks-status"></div>
+        <div class="ks-row">
+          <div class="ks-icon">★</div>
+          <div>
+            <div class="ks-name">Delivery</div>
+            <span class="ks-tag">Sprint outcome</span>
+          </div>
+        </div>
+        <div class="ks-stats">
+          <span class="stat">status <b id="delivery-status">pending</b></span>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- CONTROL / STATUS STRIP -->
+  <div class="control">
+    <div class="ctrl-cell">
+      <span class="lbl">Roster</span>
+      <div class="v"><em id="roster-count">0</em> / 3 roles</div>
+      <div class="body" id="roster-body">No agents have registered yet. They appear once they touch <code>blackboard.md</code>.</div>
+    </div>
+    <div class="ctrl-cell">
+      <span class="lbl">Task completion</span>
+      <div class="v" id="completion-v"><em>0</em> / 0 done</div>
+      <div class="body" id="completion-body">Open · claimed · done · failed counts derived from <code>tasks.json</code>.</div>
+    </div>
+    <div class="ctrl-cell">
+      <span class="lbl">Performative mix</span>
+      <div class="v" id="perfmix-v"><em>—</em> events</div>
+      <div class="body" id="perfmix-body">Balanced mix = real coordination. Monotone INFORM = broadcast, not a team.</div>
+    </div>
+  </div>
+
+  <!-- EXPLAINER -->
+  <div class="explain">
+    <p class="lede">
+      Three role-specialists share one <em>blackboard.md,</em> one <em>tasks.json,</em> and one <em>project/</em>. The capstone of the primer — seven coordination primitives on the field at once: <strong>typed performatives, atomic claims, role discipline, stigmergic lessons,</strong> and the L1/L2/L3 readout.
+    </p>
+    <div class="col">
+      <h6>What to <em>watch</em></h6>
+      <p>An <b>idle role card</b> hasn't posted in &gt;90s — that's the §15 silent-failure pattern. A <b>monotone mix</b> (only INFORM) means agents broadcast instead of addressing each other.</p>
+      <p>Stigmergic learning: a <b>LESSON</b> entry that a later claim cites back is the magic moment.</p>
+    </div>
+    <div class="col">
+      <h6>The three <em>roles</em></h6>
+      <p>Frontend owns the human-facing surface. Backend owns the engine. Tests owns the verification. Capability tags route tasks; the CLI does not enforce, so weak output is the only signal of role drift.</p>
+      <p>Protocol lives in <code>CLAUDE.md</code>. Per-role briefs in <code>.claude/agents/</code>.</p>
+    </div>
+  </div>
+
+  <!-- FINAL DELIVERY -->
+  <section class="final-brief" id="final-brief">
+    <div class="fb-head">
+      <div class="fb-title">Final <em>delivery</em></div>
+      <div class="fb-meta"><span id="fb-completion">—</span> · <span id="fb-files-count">0</span> files shipped</div>
+    </div>
+    <div class="fb-grid">
+      <article class="fb-body">
+        <h3>Verdict — three tiers</h3>
+        <ul class="verdict-list" id="verdict-list"><li>— awaiting eval —</li></ul>
+        <h3>Retro prompt</h3>
+        <p style="font-family:var(--serif);font-style:italic;font-size:16px;color:var(--ink-2);line-height:1.55">
+          What single change would you make to your team's coordination if you ran this again? Hold the answer — that's the design brief for the live big exercise on <code>blackboard-classroom</code>.
+        </p>
+      </article>
+      <div class="files-card">
+        <h3><span>Files under <em>project/</em></span><span id="fb-files-meta"></span></h3>
+        <ul class="files-list" id="files-list">
+          <li class="files-empty">— project/ untouched —</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <div class="runfoot">
+    <span>Modern AI Pro · Lab 5</span>
+    <span>Pillars 1,2,3,4,5,9,15 · Capstone</span>
+    <span>Live mirror · polling 1s</span>
+  </div>
+
+</div>
+
+<script>
+const POLL_MS = 1500;
+const IDLE_WARN_SECS = 90;
+const ROLES = ['frontend','backend','tests'];
+const PERFS = ['inform','request','commit','block','escalate','lesson'];
+
+const $ = s => document.querySelector(s);
+
+let lastEventCount = 0;
+let currentSpec = null;
+
+function pad(n){ return String(n).padStart(2,'0'); }
+
+function epochOf(ts){
+  if(!ts) return 0;
+  const d = new Date(ts);
+  return isNaN(d.getTime()) ? 0 : Math.floor(d.getTime()/1000);
+}
+
+function roleClass(r){
+  if(ROLES.includes(r)) return 'r-' + r;
+  return '';
+}
+
+// ── render ────────────────────────────────────────────────────────────
+function render(state){
+  const now = Math.floor(Date.now()/1000);
+
+  // tick / event total
+  $('#tick').textContent = state.eventTotal || 0;
+  $('#ev-count').textContent = state.eventTotal || 0;
+
+  // ── roster + per-role cards ──────────────────────────────────────
+  const rosterByRole = {};
+  for(const r of state.roster){
+    if(r.role && ROLES.includes(r.role)) rosterByRole[r.role] = r;
+  }
+  // fallback: roster order maps to roles
+  const unmappedRoster = state.roster.filter(r => !r.role || !ROLES.includes(r.role));
+  if(unmappedRoster.length){
+    for(const r of unmappedRoster){
+      for(const role of ROLES){
+        if(!rosterByRole[role]){ rosterByRole[role] = {...r, role}; break; }
+      }
+    }
+  }
+
+  // per-role event counts + last-seen
+  const evByAgent = {};
+  for(const e of (state.events || [])){
+    if(!evByAgent[e.agent]) evByAgent[e.agent] = [];
+    evByAgent[e.agent].push(e);
+  }
+
+  for(const role of ROLES){
+    const card = document.querySelector(`.ks[data-role="${role}"]`);
+    if(!card) continue;
+    const entry = rosterByRole[role];
+    const roleStatus = (state.tasks && state.tasks.roleStatus && state.tasks.roleStatus[role]) || {};
+    card.querySelector('[data-done]').textContent  = roleStatus.done   || 0;
+    card.querySelector('[data-claim]').textContent = roleStatus.claimed|| 0;
+
+    if(entry){
+      card.classList.remove('unregistered');
+      card.querySelector('[data-joined]').textContent = entry.name + ' · joined ' + (entry.joined||'').replace(/.*T/,'').replace('Z','');
+      const evs = evByAgent[entry.name] || [];
+      card.querySelector('[data-events]').textContent = evs.length;
+      if(evs.length){
+        const lastTs = epochOf(evs[evs.length-1].ts);
+        const ago = lastTs ? (now - lastTs) : Infinity;
+        card.classList.toggle('online', ago < 30);
+        card.classList.toggle('idle',   ago > IDLE_WARN_SECS);
+      }
+    } else {
+      card.classList.add('unregistered');
+      card.querySelector('[data-events]').textContent = 0;
+    }
+  }
+
+  // ── performative log entries (newest first, max 8) ───────────────
+  const entriesEl = $('#entries-log');
+  const evs = state.events || [];
+  if(evs.length === 0){
+    entriesEl.innerHTML = '<div class="empty">— awaiting the first move —</div>';
+  } else {
+    entriesEl.innerHTML = '';
+    const sliced = evs.slice().reverse().slice(0, 8);
+    sliced.forEach((e, idx) => {
+      const div = document.createElement('div');
+      const pclass = 'p-' + (e.perf || '').toLowerCase();
+      div.className = 'entry ' + pclass;
+      const tick = 't' + pad(evs.length - idx);
+      div.innerHTML = `
+        <span class="e-tick">${tick}</span>
+        <span class="e-text">${escapeHtml(e.headline)}</span>
+        <span class="e-by">${e.agent} · ${e.perf}</span>
+      `;
+      entriesEl.appendChild(div);
+    });
+  }
+
+  // ── task table ───────────────────────────────────────────────────
+  const taskWrap = $('#tasks-wrap');
+  const tasks = (state.tasks && state.tasks.tasks) || [];
+  $('#task-count').textContent = tasks.length;
+  if(tasks.length === 0){
+    taskWrap.innerHTML = '<div class="empty">— no tasks loaded —</div>';
+  } else {
+    let html = '<table class="tasks-table"><thead><tr>';
+    html += '<th>id</th><th>title</th><th>role</th><th style="text-align:right">status</th>';
+    html += '</tr></thead><tbody>';
+    for(const t of tasks){
+      const status = t.status || 'open';
+      const role = ROLES.includes(t.role) ? t.role : '';
+      const claimedBy = t.claimed_by ? ' · ' + t.claimed_by : '';
+      html += `<tr>
+        <td class="tid">${escapeHtml(t.id||'—')}</td>
+        <td class="title">${escapeHtml(t.title||'')}${claimedBy ? '<span style="color:rgba(255,255,255,0.35);font-family:var(--mono);font-size:10px;font-style:normal">'+escapeHtml(claimedBy)+'</span>' : ''}</td>
+        <td class="role ${role}">${role || (t.requires||[]).join(',')}</td>
+        <td class="status"><span class="pill ${status}">${status}</span></td>
+      </tr>`;
+    }
+    html += '</tbody></table>';
+    taskWrap.innerHTML = html;
+  }
+
+  // ── lessons ───────────────────────────────────────────────────────
+  const lessonsEl = $('#lessons-list');
+  const lessons = state.lessons || [];
+  $('#lesson-count').textContent = lessons.length;
+  if(lessons.length === 0){
+    lessonsEl.innerHTML = '<div class="empty">— no lessons yet · failures will land here —</div>';
+  } else {
+    lessonsEl.innerHTML = '';
+    lessons.slice().reverse().slice(0, 5).forEach(l => {
+      const div = document.createElement('div');
+      div.className = 'lesson-row';
+      div.innerHTML = `
+        <span class="l-by">${escapeHtml(l.agent)}</span>
+        <span class="l-text"><b>${escapeHtml(l.headline)}</b>${l.lesson ? ' — ' + escapeHtml(l.lesson) : ''}</span>
+      `;
+      lessonsEl.appendChild(div);
+    });
+  }
+
+  // ── control strip ─────────────────────────────────────────────────
+  const rosterCount = Object.keys(rosterByRole).length;
+  $('#roster-count').textContent = rosterCount;
+  if(rosterCount === 0){
+    $('#roster-body').innerHTML = 'No agents have registered yet. They appear once they touch <code>blackboard.md</code>.';
+  } else {
+    $('#roster-body').innerHTML = Object.values(rosterByRole)
+      .map(r => `<b>${escapeHtml(r.role)}</b> · ${escapeHtml(r.name)}`).join(' · ');
+  }
+
+  const counts = (state.tasks && state.tasks.counts) || {};
+  const totalTasks = state.tasks && state.tasks.total || 0;
+  $('#completion-v').innerHTML = `<em>${counts.done||0}</em> / ${totalTasks} done`;
+  $('#completion-body').innerHTML =
+    `<b>open</b> ${counts.open||0} · <b>claimed</b> ${counts.claimed||0} · <b>done</b> ${counts.done||0} · <b>failed</b> ${counts.failed||0}`;
+
+  const mix = state.perfMix || {};
+  const totalEvents = Object.values(mix).reduce((a,b)=>a+(b||0),0);
+  $('#perfmix-v').innerHTML = `<em>${totalEvents}</em> events`;
+  if(totalEvents === 0){
+    $('#perfmix-body').innerHTML = 'Balanced mix = real coordination. Monotone INFORM = broadcast, not a team.';
+  } else {
+    $('#perfmix-body').innerHTML = PERFS
+      .map(p => mix[p] ? `<b>${p}</b> ${mix[p]}` : null)
+      .filter(Boolean).join(' · ');
+  }
+
+  // ── idle warning ─────────────────────────────────────────────────
+  if(evs.length){
+    const lastEv = evs[evs.length-1];
+    const lastEpoch = epochOf(lastEv.ts);
+    if(lastEpoch){
+      const ago = now - lastEpoch;
+      $('#warn-idle').classList.toggle('on', ago > IDLE_WARN_SECS);
+      $('#idle-secs').textContent = ago;
+    }
+  } else {
+    $('#warn-idle').classList.remove('on');
+  }
+
+  // ── delivery card + final brief ──────────────────────────────────
+  const shipped = (counts.done||0);
+  const allDone = totalTasks > 0 && (counts.open||0) === 0 && (counts.claimed||0) === 0;
+  const verdict = state.verdict;
+  const delivCard = $('#delivery-card');
+
+  if(allDone){
+    delivCard.classList.remove('unregistered');
+    delivCard.classList.add('online');
+    $('#delivery-status').textContent = `${shipped}/${totalTasks} ✓`;
+    $('#warn-done').classList.add('on');
+  } else if(shipped > 0){
+    delivCard.classList.remove('unregistered');
+    $('#delivery-status').textContent = `${shipped}/${totalTasks} done`;
+    $('#warn-done').classList.remove('on');
+  } else {
+    delivCard.classList.add('unregistered');
+    delivCard.classList.remove('online');
+    $('#delivery-status').textContent = 'pending';
+    $('#warn-done').classList.remove('on');
+  }
+
+  // final delivery section appears once we have at least one done task OR a verdict
+  const showFinal = shipped > 0 || verdict;
+  renderFinal(state, showFinal);
+
+  // mtime
+  $('#last-mtime').textContent = new Date().toLocaleTimeString();
+  $('#conn-status').textContent = 'live · ' + new Date().toLocaleTimeString();
+  lastEventCount = evs.length;
+}
+
+function renderFinal(state, show){
+  const box = $('#final-brief');
+  if(!show){ box.classList.remove('on'); return; }
+  box.classList.add('on');
+
+  const counts = (state.tasks && state.tasks.counts) || {};
+  const totalTasks = state.tasks && state.tasks.total || 0;
+  const denom = (counts.done||0) + (counts.failed||0);
+  const compPct = denom > 0 ? Math.round(((counts.done||0)/denom)*100) : null;
+  $('#fb-completion').textContent = compPct === null ? '— completion' : (compPct + '% completion');
+
+  // verdict bullets
+  const vlist = $('#verdict-list');
+  vlist.innerHTML = '';
+  const verdict = state.verdict;
+  if(verdict && verdict.verdict && verdict.verdict.length){
+    for(const line of verdict.verdict){
+      const li = document.createElement('li');
+      let cls = '';
+      if(/✓/.test(line)) cls = 'ok';
+      else if(/⚠/.test(line)) cls = 'warn';
+      else if(/✗/.test(line)) cls = 'fail';
+      if(cls) li.className = cls;
+      li.textContent = line;
+      vlist.appendChild(li);
+    }
+  } else {
+    const li = document.createElement('li');
+    li.textContent = 'Run ./eval-self.sh in a terminal once the sprint settles for the full L1/L2/L3 readout. This card refreshes when it does.';
+    vlist.appendChild(li);
+  }
+
+  // files
+  const files = state.files || [];
+  $('#fb-files-count').textContent = files.length;
+  $('#fb-files-meta').textContent = files.length ? files.length + ' files' : '';
+  const flist = $('#files-list');
+  flist.innerHTML = '';
+  if(files.length === 0){
+    const li = document.createElement('li');
+    li.className = 'files-empty';
+    li.textContent = '— project/ untouched —';
+    flist.appendChild(li);
+  } else {
+    // sort by mtime desc
+    const sorted = files.slice().sort((a,b) => (b.mtime||0) - (a.mtime||0));
+    for(const f of sorted){
+      const li = document.createElement('li');
+      const name = f.path.split('/').pop();
+      const dir = f.path.slice(0, f.path.length - name.length);
+      li.innerHTML = `
+        <span class="fpath" title="${escapeHtml(f.path)}">${escapeHtml(dir)}<b>${escapeHtml(name)}</b></span>
+        <span class="fsize">${fmtBytes(f.bytes)}</span>
+      `;
+      flist.appendChild(li);
+    }
+  }
+}
+
+function fmtBytes(n){
+  if(n == null) return '—';
+  if(n < 1024) return n + ' B';
+  if(n < 1024*1024) return (n/1024).toFixed(1) + ' kB';
+  return (n/1024/1024).toFixed(2) + ' MB';
+}
+
+function escapeHtml(s){
+  return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+
+// ── spec input ─────────────────────────────────────────────────────
+const specInput  = document.getElementById('spec-input');
+const specSubmit = document.getElementById('spec-submit');
+const specReset  = document.getElementById('spec-reset');
+const specHint   = document.getElementById('spec-hint');
+const kickoffBox = document.getElementById('kickoff');
+const taskTitle  = document.getElementById('task-title');
+const taskSub    = document.getElementById('task-sub');
+
+function setHint(msg, isError){
+  specHint.innerHTML = msg;
+  specHint.style.color = isError ? 'var(--accent)' : '';
+}
+
+async function submitSpec(){
+  const spec = specInput.value.trim();
+  if(!spec){ setHint('Type a feature spec first.', true); return; }
+  specSubmit.disabled = true;
+  try{
+    const r = await fetch('/api/spec', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({spec})
+    });
+    const j = await r.json();
+    if(!r.ok) throw new Error(j.error || 'request failed');
+    currentSpec = spec;
+    kickoffBox.hidden = false;
+    setHint('<b>Workspace seeded.</b> <code>project.md</code>, <code>blackboard.md</code>, <code>tasks.json</code>, and <code>project/</code> reset from templates. Run <code>./lab5-up.sh</code> in a terminal to launch the three agents.');
+    updateChrome();
+  } catch(e){
+    setHint('Failed: ' + e.message, true);
+  } finally {
+    specSubmit.disabled = false;
+  }
+}
+
+async function resetWorkspace(){
+  specReset.disabled = true;
+  try{
+    const r = await fetch('/api/reset', {method:'POST'});
+    if(!r.ok) throw new Error('reset failed');
+    setHint('<b>Workspace reset.</b> Restart the lab to begin a new run on the same spec.');
+  } catch(e){
+    setHint('Failed: ' + e.message, true);
+  } finally {
+    specReset.disabled = false;
+  }
+}
+
+function updateChrome(){
+  if(currentSpec){
+    taskTitle.textContent = currentSpec.length > 64 ? currentSpec.slice(0,64) + '…' : currentSpec;
+    taskSub.textContent = 'Live build sprint';
+  } else {
+    taskTitle.textContent = 'Awaiting feature spec';
+    taskSub.textContent = 'Describe what they should ship';
+  }
+}
+
+async function poll(){
+  try{
+    const r = await fetch('/api/state?_=' + Date.now(), {cache:'no-store'});
+    if(!r.ok) throw new Error('HTTP ' + r.status);
+    const s = await r.json();
+    if(s.spec && s.spec !== currentSpec){
+      currentSpec = s.spec;
+      specInput.value = currentSpec;
+      kickoffBox.hidden = false;
+      updateChrome();
+    } else if(!s.spec && !currentSpec){
+      kickoffBox.hidden = true;
+    }
+    render(s);
+  } catch(e){
+    $('#conn-status').textContent = 'offline · ' + e.message;
+  }
+}
+
+specSubmit.addEventListener('click', submitSpec);
+specReset.addEventListener('click', resetWorkspace);
+specInput.addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); submitSpec(); }});
+
+poll();
+setInterval(poll, POLL_MS);
+</script>
+</body>
+</html>

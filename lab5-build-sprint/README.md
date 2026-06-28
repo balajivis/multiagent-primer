@@ -126,16 +126,23 @@ Then write your one-line answer: *"What single change would you make to your tea
 ## Files
 
 - `CLAUDE.md` — base agent protocol (performatives, lessons, claim discipline)
-- `task.md` — the build brief (tiny-crm-cli)
+- `task.md` — the build brief (default: tiny-crm-cli; reframed by `project.md` if you seed a custom spec)
+- `project.template.md` → `project.md` — feature spec written by the live mirror (optional; `task.md` still works alone)
 - `blackboard.template.md` — starter blackboard with sections
 - `tasks.template.json` — 12 starter tasks with `requires` tags
 - `project.template/` — starter code (package.json + src/cli.ts stub); copied to `project/` (gitignored) each run
 - `task-cli/task` — atomic claim CLI (lifted from Lab 2)
-- `bb-watch.sh` — live mirror of blackboard.md
+- `bb-watch.sh` — terminal live mirror of blackboard.md
+- `bb-server.py` + `bb-serve.sh` — browser live mirror (Python 3 stdlib server); `./bb-serve.sh [port]` → http://localhost:8769/bb-mirror.html. Accepts a custom feature spec, monitors roster + tasks + performatives + files shipped, surfaces the eval verdict.
+- `bb-mirror.html` — the live-mirror UI served by `bb-server.py`
 - `eval-self.sh` — debrief metrics script (L1 / L2 / L3)
 - `.claude/agents/{frontend,backend,tests}.md` — role-specific system prompts
 - `lab5-up.sh` / `lab5-down.sh` — bootstrap / archive
 - `runs/` — archived runs
+
+### Custom feature specs
+
+By default the agents ship `tiny-crm-cli` as described in `task.md`. To run the sprint on a different small CLI feature, run `./bb-serve.sh` in a separate terminal, open the live mirror, and type a feature spec (e.g. "a link-shortener CLI with shorten / expand / list / stats"). The server writes `project.md`, resets `blackboard.md` + `tasks.json` + `project/` from templates, and the 12 starter tasks get reframed by the spec on the agents' next read.
 
 ---
 
