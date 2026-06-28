@@ -355,6 +355,137 @@ p{margin:0}
 }
 .explain .col p + p{margin-top:8px}
 .explain .col code{font-family:var(--mono);font-size:11px;color:var(--accent)}
+
+/* problem input card */
+.topic-card{
+  display:grid;grid-template-columns:1fr auto;gap:24px;align-items:end;
+  padding:22px 64px 22px;border-bottom:1px solid var(--line);
+  background:var(--paper-card);
+}
+.topic-card .topic-label{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:0.22em;
+  color:var(--muted);text-transform:uppercase;margin-bottom:8px;
+}
+.topic-card .topic-label em{color:var(--accent);font-style:italic;font-family:var(--serif);text-transform:none;letter-spacing:0;font-size:13px}
+.topic-card input[type="text"]{
+  width:100%;
+  font-family:var(--serif);font-size:22px;font-style:italic;color:var(--ink);
+  background:transparent;border:0;border-bottom:1.5px solid var(--ink);
+  padding:6px 0 8px;outline:none;
+}
+.topic-card input[type="text"]::placeholder{color:var(--muted-2);font-style:italic}
+.topic-card input[type="text"]:focus{border-bottom-color:var(--accent)}
+.topic-card .topic-hint{
+  font-family:var(--sans);font-size:12px;line-height:1.5;color:var(--ink-2);margin-top:8px;
+}
+.topic-card .topic-hint code{font-family:var(--mono);font-size:11px;color:var(--accent)}
+.topic-card .topic-actions{display:flex;flex-direction:column;gap:8px}
+.btn{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:0.22em;text-transform:uppercase;
+  padding:11px 22px;border:1px solid var(--ink);background:var(--ink);color:var(--paper);
+  cursor:pointer;transition:opacity 120ms ease,background 120ms ease;
+  white-space:nowrap;
+}
+.btn:hover{opacity:0.88}
+.btn:disabled{opacity:0.4;cursor:not-allowed}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn-ghost{background:transparent;color:var(--ink)}
+
+/* kickoff message — three hints, one per round */
+.kickoff{
+  padding:14px 64px 18px;border-bottom:1px solid var(--line);
+  background:var(--paper-2);
+}
+.kickoff .k-head{
+  display:flex;justify-content:space-between;align-items:baseline;
+  font-family:var(--mono);font-size:10px;letter-spacing:0.22em;color:var(--muted);
+  text-transform:uppercase;margin-bottom:10px;
+}
+.kickoff .k-head em{
+  font-family:var(--serif);font-style:italic;font-size:12.5px;color:var(--ink-2);
+  text-transform:none;letter-spacing:0;
+}
+.kickoff .k-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.kickoff .k-card{
+  background:var(--paper);border:1px solid var(--line);
+  padding:11px 13px;display:flex;flex-direction:column;gap:6px;
+  position:relative;
+}
+.kickoff .k-card.active{border-color:var(--accent);box-shadow:0 0 0 2px rgba(139,46,31,0.08)}
+.kickoff .k-card .k-title{
+  font-family:var(--mono);font-size:9.5px;letter-spacing:0.22em;color:var(--muted);text-transform:uppercase;
+}
+.kickoff .k-card .k-title em{color:var(--accent);font-style:italic;font-family:var(--serif);text-transform:none;letter-spacing:0;font-size:12.5px}
+.kickoff .k-card .k-body{
+  font-family:var(--sans);font-size:11.5px;line-height:1.5;color:var(--ink-2);
+}
+.kickoff .k-card .k-body code{font-family:var(--mono);font-size:10.5px;color:var(--accent);background:rgba(139,46,31,0.06);padding:0 4px}
+.kickoff .k-badge{
+  position:absolute;top:9px;right:9px;
+  font-family:var(--mono);font-size:8.5px;letter-spacing:0.2em;
+  color:var(--accent);text-transform:uppercase;
+}
+
+/* round comparison */
+.compare{
+  padding:32px 64px 36px;border-top:2px solid var(--ink);
+  background:linear-gradient(180deg, var(--paper) 0%, var(--paper-card) 100%);
+}
+.compare .c-head{
+  display:flex;justify-content:space-between;align-items:baseline;
+  border-bottom:1px solid var(--ink);padding-bottom:12px;margin-bottom:20px;
+}
+.compare .c-title{font-family:var(--serif);font-size:30px;font-weight:500;letter-spacing:-0.018em;color:var(--ink)}
+.compare .c-title em{color:var(--accent);font-style:italic}
+.compare .c-meta{font-family:var(--mono);font-size:10px;letter-spacing:0.22em;color:var(--muted);text-transform:uppercase}
+.compare .c-meta b{color:var(--accent);font-weight:400}
+.compare .c-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.compare .c-card{
+  background:var(--paper-card);border:1px solid var(--line);
+  padding:18px 18px 20px;display:flex;flex-direction:column;gap:10px;
+  position:relative;
+}
+.compare .c-card.empty{opacity:0.55}
+.compare .c-card.active{border-color:var(--accent);border-width:1.5px;box-shadow:0 0 0 3px rgba(139,46,31,0.06)}
+.compare .c-card .c-card-head{
+  display:flex;justify-content:space-between;align-items:baseline;
+  border-bottom:1px solid var(--line);padding-bottom:8px;
+}
+.compare .c-card .c-name{font-family:var(--serif);font-style:italic;font-size:22px;color:var(--ink);font-weight:500;letter-spacing:-0.01em}
+.compare .c-card .c-name b{color:var(--accent);font-weight:500;font-style:normal;font-family:var(--serif);margin-right:6px}
+.compare .c-card .c-tag{font-family:var(--mono);font-size:9px;letter-spacing:0.2em;color:var(--muted);text-transform:uppercase}
+.compare .c-card .c-tag.live{color:var(--accent)}
+.compare .c-card .c-tag.done{color:var(--olive)}
+.compare .c-card .c-stats{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:6px 14px;
+  font-family:var(--mono);font-size:9.5px;letter-spacing:0.14em;color:var(--muted);text-transform:uppercase;
+  padding-bottom:4px;
+}
+.compare .c-card .c-stats b{color:var(--ink);font-weight:500;font-family:var(--serif);font-size:13px;letter-spacing:0;text-transform:none}
+.compare .c-card .c-roles{
+  font-family:var(--mono);font-size:9.5px;letter-spacing:0.14em;color:var(--muted);text-transform:uppercase;
+}
+.compare .c-card .c-roles span{
+  display:inline-block;margin-right:6px;padding:1px 7px;
+  background:rgba(0,0,0,0.05);border:1px solid var(--line);color:var(--ink-2);
+}
+.compare .c-card .c-itin{
+  margin-top:6px;padding:10px 12px;background:var(--paper);border-left:2px solid var(--accent);
+  font-family:var(--serif);font-size:13.5px;line-height:1.5;color:var(--ink);
+  max-height:280px;overflow-y:auto;
+}
+.compare .c-card .c-itin h2,.compare .c-card .c-itin h3{
+  font-size:14.5px;font-weight:500;margin:10px 0 4px;letter-spacing:-0.01em;color:var(--ink);
+}
+.compare .c-card .c-itin h2:first-child,.compare .c-card .c-itin h3:first-child{margin-top:0}
+.compare .c-card .c-itin p{margin:0 0 8px}
+.compare .c-card .c-itin strong{color:var(--accent);font-weight:600}
+.compare .c-card .c-itin ul,.compare .c-card .c-itin ol{margin:0 0 8px 18px}
+.compare .c-card .c-itin code{font-family:var(--mono);font-size:11.5px;color:var(--accent)}
+.compare .c-card .c-empty{
+  font-family:var(--serif);font-style:italic;font-size:13.5px;color:var(--muted);
+  padding:20px 0;text-align:center;
+}
 </style>
 </head>
 <body>
@@ -382,8 +513,43 @@ p{margin:0}
       <p class="sub">Supervisor · pipeline · swarm. Same brief, three org charts. Watch the partitions fill differently and the pain modes shift. <em>The contrast is the lesson.</em></p>
     </div>
     <div class="meta">
-      <strong id="task-title">Lisbon trip brief</strong>
-      Multi-Agent Primer · Lab 3
+      <strong id="task-title">Awaiting problem</strong>
+      <span id="task-sub">Type a problem below to brief all three rounds</span>
+    </div>
+  </div>
+
+  <!-- PROBLEM INPUT -->
+  <div class="topic-card" id="topic-card">
+    <div class="topic-left">
+      <div class="topic-label">Problem brief <em>— what should these three teams solve?</em></div>
+      <input type="text" id="topic-input" placeholder="e.g. Plan a 3-day Lisbon trip for 2 in October, ≤ €1500 from SFO" autocomplete="off" />
+      <div class="topic-hint" id="topic-hint">Same brief, three topologies. The current text becomes <code>task.md</code>; the next run of each round reads it. Round 1 = supervisor · 2 = pipeline · 3 = swarm.</div>
+    </div>
+    <div class="topic-actions">
+      <button id="topic-submit" class="btn btn-primary">Set problem</button>
+      <button id="topic-reset"  class="btn btn-ghost">Reset board</button>
+    </div>
+  </div>
+
+  <!-- KICKOFF HINTS — one per round -->
+  <div class="kickoff" id="kickoff" hidden>
+    <div class="k-head"><span>Kickoff hints · paste into your 3 Claude panes</span><em>active round is highlighted</em></div>
+    <div class="k-grid">
+      <div class="k-card" data-round="1">
+        <span class="k-badge" data-active hidden>active</span>
+        <div class="k-title">Round 1 · <em>Supervisor</em></div>
+        <div class="k-body">First agent in is the <b>supervisor</b>: posts directives. The other two are <b>workers</b>: wait for a directive, then act. Launch with <code>./lab3-up.sh 1</code>.</div>
+      </div>
+      <div class="k-card" data-round="2">
+        <span class="k-badge" data-active hidden>active</span>
+        <div class="k-title">Round 2 · <em>Pipeline</em></div>
+        <div class="k-body">agent-1 owns <b>Transport</b>, agent-2 <b>Lodging</b>, agent-3 <b>Activities</b>. Each waits for the prior stage's <code>DONE</code>. Launch with <code>./lab3-up.sh 2</code>.</div>
+      </div>
+      <div class="k-card" data-round="3">
+        <span class="k-badge" data-active hidden>active</span>
+        <div class="k-title">Round 3 · <em>Swarm</em></div>
+        <div class="k-body">Three peers, no roles. Read the board, find a gap, post. First to notice full coverage drafts the itinerary. Launch with <code>./lab3-up.sh 3</code>.</div>
+      </div>
     </div>
   </div>
 
@@ -567,8 +733,19 @@ p{margin:0}
     </div>
   </div>
 
+  <!-- ROUND COMPARISON -->
+  <section class="compare" id="compare">
+    <div class="c-head">
+      <div class="c-title">Round <em>comparison</em></div>
+      <div class="c-meta"><b id="rounds-done">0</b> of 3 rounds with output</div>
+    </div>
+    <div class="c-grid" id="compare-grid">
+      <!-- filled by JS from /api/state -->
+    </div>
+  </section>
+
   <div class="runfoot">
-    <span>Modern AI Pro · Lab 1</span>
+    <span>Modern AI Pro · Lab 3</span>
     <span>Pillars 1, 4 · Shared State · Result Sharing</span>
     <span>Live mirror · polling 1s</span>
   </div>
@@ -827,6 +1004,174 @@ async function poll(){
     $('#conn-status').textContent = 'offline · ' + e.message;
   }
 }
+
+// ── problem input + per-round comparison ──────────────────────────────
+const topicInput  = document.getElementById('topic-input');
+const topicSubmit = document.getElementById('topic-submit');
+const topicReset  = document.getElementById('topic-reset');
+const topicHint   = document.getElementById('topic-hint');
+const kickoffBox  = document.getElementById('kickoff');
+const taskTitle   = document.getElementById('task-title');
+const taskSub     = document.getElementById('task-sub');
+const compareGrid = document.getElementById('compare-grid');
+const roundsDone  = document.getElementById('rounds-done');
+
+let currentProblem = null;
+let activeRound = null;
+
+function setStatusMsg(msg, isError){
+  topicHint.innerHTML = msg;
+  topicHint.style.color = isError ? 'var(--accent)' : '';
+}
+
+async function submitProblem(){
+  const problem = topicInput.value.trim();
+  if(!problem){ setStatusMsg('Type a problem brief first.', true); return; }
+  topicSubmit.disabled = true;
+  try{
+    const r = await fetch('/api/problem', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({problem})
+    });
+    const j = await r.json();
+    if(!r.ok){ throw new Error(j.error || 'request failed'); }
+    currentProblem = problem;
+    kickoffBox.hidden = false;
+    setStatusMsg('<b>Problem set.</b> task.md rewritten · live board cleared · prior round snapshots wiped. Launch any round with <code>./lab3-up.sh N</code>.');
+    updateTopicChrome();
+  } catch(e){
+    setStatusMsg('Failed: ' + e.message, true);
+  } finally {
+    topicSubmit.disabled = false;
+  }
+}
+
+async function resetBoardOnly(){
+  topicReset.disabled = true;
+  try{
+    const r = await fetch('/api/reset', {method:'POST'});
+    if(!r.ok) throw new Error('reset failed');
+    setStatusMsg('<b>Active board reset.</b> Re-run <code>./lab3-up.sh N</code> to start fresh on the current problem.');
+  } catch(e){
+    setStatusMsg('Failed: ' + e.message, true);
+  } finally {
+    topicReset.disabled = false;
+  }
+}
+
+function updateTopicChrome(){
+  if(currentProblem){
+    taskTitle.textContent = currentProblem.length > 64 ? currentProblem.slice(0,64) + '…' : currentProblem;
+    taskSub.textContent = activeRound ? ('Round ' + activeRound + ' · live') : 'Awaiting a round launch';
+  } else {
+    taskTitle.textContent = 'Awaiting problem';
+    taskSub.textContent = 'Type a problem below to brief all three rounds';
+  }
+}
+
+// Tiny inline markdown renderer for itinerary blocks — enough for the
+// agents' final output without pulling a library.
+function renderMd(md){
+  if(!md) return '';
+  const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const inline = s => esc(s)
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/(^|[^*])\*([^*\n]+)\*/g, '$1<em>$2</em>');
+  const lines = md.replace(/\r\n/g,'\n').split('\n');
+  const out = []; let para = []; let list = null;
+  const flushPara = () => { if(para.length){ out.push('<p>' + inline(para.join(' ')) + '</p>'); para = []; } };
+  const flushList = () => { if(list){ out.push(`</${list}>`); list = null; } };
+  for(const raw of lines){
+    const line = raw.trimEnd();
+    if(/^##\s+ITINERARY/i.test(line)){ flushPara(); flushList(); continue; }
+    if(/^---+$/.test(line)){ flushPara(); flushList(); continue; }
+    if(/^###\s+/.test(line)){ flushPara(); flushList(); out.push('<h3>' + inline(line.replace(/^###\s+/,'')) + '</h3>'); continue; }
+    if(/^##\s+/.test(line)){  flushPara(); flushList(); out.push('<h2>' + inline(line.replace(/^##\s+/,''))  + '</h2>'); continue; }
+    const um = line.match(/^[-*]\s+(.+)$/);
+    if(um){ flushPara(); if(list !== 'ul'){ flushList(); out.push('<ul>'); list = 'ul'; } out.push('<li>' + inline(um[1]) + '</li>'); continue; }
+    const om = line.match(/^\d+\.\s+(.+)$/);
+    if(om){ flushPara(); if(list !== 'ol'){ flushList(); out.push('<ol>'); list = 'ol'; } out.push('<li>' + inline(om[1]) + '</li>'); continue; }
+    if(!line.trim()){ flushPara(); flushList(); continue; }
+    para.push(line);
+  }
+  flushPara(); flushList();
+  return out.join('\n');
+}
+
+function renderCompare(rounds){
+  if(!rounds || !rounds.length){ compareGrid.innerHTML = ''; roundsDone.textContent = 0; return; }
+  let done = 0;
+  compareGrid.innerHTML = rounds.map(r => {
+    const has = !!r.has_output;
+    if(has) done++;
+    const stats = r.stats || {};
+    const bySection = stats.by_section || {};
+    const roles = (stats.roles || []).map(x => `<span>${x}</span>`).join('') || '<span style="opacity:.5">— no roles —</span>';
+    const tagCls = r.active ? 'live' : (stats.has_itinerary ? 'done' : '');
+    const tagText = r.active ? 'Live' : (stats.has_itinerary ? 'Done · itinerary' : (has ? 'In progress' : 'Not started'));
+    const itinBlock = stats.has_itinerary && r.itinerary
+      ? `<div class="c-itin">${renderMd(r.itinerary)}</div>`
+      : (has
+          ? `<div class="c-empty">— ${stats.entries||0} entries, no itinerary yet —</div>`
+          : `<div class="c-empty">— run <code>./lab3-up.sh ${r.round}</code> —</div>`);
+    return `
+      <article class="c-card ${has ? '' : 'empty'} ${r.active ? 'active' : ''}">
+        <div class="c-card-head">
+          <div class="c-name"><b>R${r.round}.</b>${r.name}</div>
+          <span class="c-tag ${tagCls}">${tagText}</span>
+        </div>
+        <div class="c-stats">
+          <span>entries · <b>${stats.entries||0}</b></span>
+          <span>agents · <b>${stats.agents||0}</b></span>
+          <span>directives · <b>${stats.directives||0}</b></span>
+          <span>done · <b>${stats.dones||0}</b></span>
+        </div>
+        <div class="c-roles">${roles}</div>
+        <div class="c-roles">section coverage · ${SECTIONS.map(s => `${s.charAt(0)}<b style="color:${(bySection[s]||0)>0?'var(--ink)':'var(--muted-2)'};font-family:var(--serif);font-size:13px">${bySection[s]||0}</b>`).join(' · ')}</div>
+        ${itinBlock}
+      </article>`;
+  }).join('');
+  roundsDone.textContent = done;
+}
+
+function highlightActive(round){
+  document.querySelectorAll('.k-card').forEach(card => {
+    const r = parseInt(card.dataset.round, 10);
+    const on = round && r === round;
+    card.classList.toggle('active', !!on);
+    const badge = card.querySelector('[data-active]');
+    if(badge) badge.hidden = !on;
+  });
+}
+
+async function fetchState(){
+  try{
+    const r = await fetch('/api/state?_=' + Date.now(), {cache:'no-store'});
+    if(!r.ok) return;
+    const s = await r.json();
+    if(s.problem && s.problem !== currentProblem){
+      currentProblem = s.problem;
+      if(!topicInput.value) topicInput.value = currentProblem;
+      kickoffBox.hidden = false;
+    } else if(!s.problem){
+      kickoffBox.hidden = true;
+    }
+    activeRound = s.active_round || null;
+    highlightActive(activeRound);
+    updateTopicChrome();
+    renderCompare(s.rounds || []);
+  } catch {}
+}
+
+topicSubmit.addEventListener('click', submitProblem);
+topicReset.addEventListener('click', resetBoardOnly);
+topicInput.addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); submitProblem(); }});
+
+fetchState();
+setInterval(fetchState, 2000);
 
 poll();
 setInterval(poll, POLL_MS);

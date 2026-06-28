@@ -48,11 +48,25 @@ fi
 if [ -s blackboard.md ] && ! cmp -s blackboard.md blackboard.template.md; then
   mkdir -p runs
   ts=$(date -u +%Y%m%d-%H%M%SZ)
-  cp blackboard.md "runs/${ts}-round-prev.md"
-  echo "▶ archived previous run → runs/${ts}-round-prev.md"
+  # Always keep a timestamped archive (so multiple attempts at the
+  # same round are recoverable) AND a stable round-N.md snapshot the
+  # bb-server.py comparison panel reads.
+  PREV_ROUND=""
+  [ -f .current-round ] && PREV_ROUND=$(cat .current-round 2>/dev/null || true)
+  if [ -n "$PREV_ROUND" ]; then
+    cp blackboard.md "runs/${ts}-round-${PREV_ROUND}.md"
+    cp blackboard.md "runs/round-${PREV_ROUND}.md"
+    echo "▶ archived previous run → runs/${ts}-round-${PREV_ROUND}.md (+ runs/round-${PREV_ROUND}.md)"
+  else
+    cp blackboard.md "runs/${ts}-round-prev.md"
+    echo "▶ archived previous run → runs/${ts}-round-prev.md"
+  fi
 fi
 cp blackboard.template.md blackboard.md
 ln -sf "${DIR}/CLAUDE.md" CLAUDE.md
+# Stamp the round so bb-server.py can label the live board and the
+# next ./lab3-up.sh knows what to snapshot.
+printf '%s\n' "${ROUND_NUM}" > .current-round
 echo "▶ ${LABEL} · CLAUDE.md → ${DIR}/CLAUDE.md"
 
 # window 0 — terminal mirror + 3 agents

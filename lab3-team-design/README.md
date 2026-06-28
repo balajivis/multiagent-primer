@@ -16,9 +16,13 @@ Three rounds. **Same task. Same three Claude agents. Three different topologies.
 | 2 | **Pipeline** | agent-1 → agent-2 → agent-3 (each transforms upstream) | `round2-pipeline/CLAUDE.md` |
 | 3 | **Swarm** | three peers, no roles (= Lab 1) | `round3-swarm/CLAUDE.md` |
 
-The brief is `task.md` — *plan a 3-day Lisbon trip for 2, ≤ €1500*. Identical across rounds. Only the topology changes.
+The brief is `task.md` — *plan a 3-day Lisbon trip for 2, ≤ €1500* by default. Identical across rounds. Only the topology changes.
 
 You will see the same partitions (Transport · Lodging · Activities · Budget) fill differently each time. That contrast is the whole lesson.
+
+### Custom problem (optional)
+
+Type any problem into the live mirror's top input card. It rewrites `task.md`, clears the active board, and wipes any prior per-round snapshots — every subsequent `./lab3-up.sh N` will read the new brief. The four partition names stay generic (Transport · Lodging · Activities · Budget) so the same UI works for any problem; re-interpret them for your domain (e.g. for a launch plan: Transport = comms channels, Lodging = where users land, Activities = launch-day plan, Budget = spend).
 
 ---
 
@@ -70,7 +74,9 @@ Watch the live mirror. Note (on paper) for each round:
 
 ## After all three rounds (5 min compare)
 
-Open `runs/` and put the three archived boards side-by-side. For each round, answer:
+The live mirror's **Round comparison** panel (at the bottom of the page) shows the three rounds side-by-side: entry counts, agents, directives/DONEs, and the final itinerary text per round. Each completed round is snapshotted to `runs/round-N.md` automatically (by `./lab3-up.sh` when you switch rounds, or by `./lab3-down.sh` when you tear the session down).
+
+Alternatively, open `runs/` in your editor and read the three archived boards directly. For each round, answer:
 
 1. **Was the topology right for this task?** (Hint: pre-reveal answer below.)
 2. **Where did the topology hurt the most?**
