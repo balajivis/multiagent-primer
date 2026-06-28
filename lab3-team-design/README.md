@@ -15,6 +15,9 @@ Three rounds. **Same task. Same three Claude agents. Three different topologies.
 | 1 | **Supervisor** | agent-1 = boss · agent-2/3 = workers (only act on directives) | `round1-supervisor/CLAUDE.md` |
 | 2 | **Pipeline** | agent-1 → agent-2 → agent-3 (each transforms upstream) | `round2-pipeline/CLAUDE.md` |
 | 3 | **Swarm** | three peers, no roles (= Lab 1) | `round3-swarm/CLAUDE.md` |
+| 4 | **Dynamic** *(bonus)* | agents spawned by capability, ended on completion — fleet size = the task | `round4-dynamic/CLAUDE.md` |
+
+Rounds 1–3 use a **fixed** team of three. Round 4 (below) is the contrast: the team is **not fixed** — you declare what the task needs and the orchestrator starts only the matching agents, then ends each one as it finishes.
 
 The brief is `task.md` — *plan a 3-day Lisbon trip for 2, ≤ €1500* by default. Identical across rounds. Only the topology changes.
 
@@ -87,6 +90,54 @@ The lesson: there is no universally right topology. The cost of a *mismatch* is 
 
 ---
 
+## Round 4 — Dynamic spawn & reap (bonus, ~10 min)
+
+Rounds 1–3 fix the team at three agents and ask *which topology fits?* Round 4
+flips the question: **let the task decide how many agents, and which kinds.**
+
+You describe a task and the **capabilities** it needs. An orchestrator
+(`lab3-dyn.sh`) reads the agent registry (mirrors [`../agents.md`](../agents.md)),
+spawns **only** the agents whose triggers match, each in its own pane, and
+**ends each agent the moment it posts `### DONE <id>`** to the board. The fleet
+grows and shrinks with the work — nothing stands idle.
+
+```
+# see what's available
+./lab3-dyn.sh caps
+
+# preview the spawn plan without launching anything
+./lab3-dyn.sh --dry-run "Ship the export feature" research,plan,build,test,review,document
+
+# launch: orchestrator + one pane per matched agent
+./lab3-dyn.sh "Ship paid API access" build,finance,legal
+
+# or omit the needs and it will prompt you for them
+./lab3-dyn.sh "Draft a remote-work policy"
+
+# tear down (snapshots the board to runs/round-4.md)
+./lab3-dyn.sh down
+```
+
+Capability words accept friendly aliases (`plan`→decompose/sequence,
+`build`→implement, `test`→verify, `doc`→document). Pane 0 is the **fleet view**:
+watch agents flip from `● running` to `✓ ended` live.
+
+**The registry includes three domain specialists** — `finance-analyst`,
+`legal-counsel`, `hr-advisor` — that spawn only on their domain tag (so a
+generic `review` request won't drag legal/HR in) and carry an `escalate_to:
+human` threshold. That's the bridge into **Lab 4 (HITL & Governance)**.
+
+Things to notice (and discuss):
+- A technical task (`research,plan,build,test,review,document`) spawns six
+  lifecycle agents; a `build,finance,legal` task spawns three. **Same
+  orchestrator, different fleet** — that's the dynamic part.
+- Compare wall-clock and coordination cost vs. the fixed rounds. When is
+  dynamic worth the orchestration machinery, and when is a fixed team simpler?
+- What happens if a domain agent hits its escalation threshold and there's no
+  human watching? (Foreshadows Lab 4.)
+
+---
+
 ## What good looks like
 
 | Round | Healthy outcome | Common failure |
@@ -111,7 +162,12 @@ lab3-team-design/
 ├── round1-supervisor/CLAUDE.md
 ├── round2-pipeline/CLAUDE.md
 ├── round3-swarm/CLAUDE.md
-├── lab3-up.sh / lab3-down.sh
+├── round4-dynamic/            ← bonus: dynamic spawn & reap
+│   ├── CLAUDE.md              ← protocol for a dynamically-spawned, self-ending agent
+│   ├── board.template.md      ← Round 4 board (Roster · Results · Completion)
+│   └── fleet.sh              ← live fleet view (running ● → ended ✓)
+├── lab3-up.sh / lab3-down.sh  ← rounds 1–3
+├── lab3-dyn.sh                ← round 4 orchestrator (caps / --dry-run / down)
 ├── bb-watch.sh / bb-mirror.html / bb-serve.sh
 ├── .claude/settings.json      ← pre-granted Bash + WebFetch + WebSearch
 └── runs/                      ← auto-archive of each round's final board

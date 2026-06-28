@@ -86,3 +86,4 @@ lab4-hitl-governance/.hitl.lock
 
 # Per-project local Claude settings
 **/.claude/settings.local.json
+.gstack/
